@@ -1,1097 +1,141 @@
-<!DOCTYPE html>
-<html lang="pt-BR" class="dark">
+<!doctype html>
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Worship Stage — Setlist & Cifras</title>
-    <style>
-        :root {
-            --bg-main: #121212;
-            --bg-card: #1e1e1e;
-            --bg-card-hover: #2a2a2a;
-            --text-main: #e5e7eb;
-            --text-muted: #9ca3af;
-            --accent-blue: #3b82f6;
-            --accent-blue-hover: #2563eb;
-            --accent-pink: #f43f5e;
-            --accent-amber: #f59e0b;
-            --accent-amber-bg: rgba(245, 158, 11, 0.15);
-            --border-color: #27272a;
-            --chord-color: #60a5fa;
-            --section-color: #fb7185;
-            --success: #10b981;
-            --danger: #ef4444;
-        }
-
-        .high-contrast {
-            --bg-main: #000000;
-            --bg-card: #0a0a0a;
-            --bg-card-hover: #1a1a1a;
-            --text-main: #ffffff;
-            --text-muted: #e5e7eb;
-            --accent-blue: #60a5fa;
-            --chord-color: #93c5fd;
-            --section-color: #fda4af;
-            --border-color: #ffffff;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow-x: hidden;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        button, select, input, textarea {
-            font: inherit;
-            color: inherit;
-            background: none;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 8px 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        button:hover { background-color: var(--bg-card-hover); }
-        button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
-            outline: 2px solid var(--accent-blue);
-            outline-offset: 2px;
-        }
-
-        /* Layout Principal */
-        header {
-            background-color: var(--bg-card);
-            border-bottom: 1px solid var(--border-color);
-            padding: 12px 16px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        @media(min-width: 768px) {
-            .header-content {
-                flex-direction: row;
-                justify-content: space-between;
-                align-items: center;
-            }
-        }
-
-        .song-info h1 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        .song-info p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-top: 2px;
-        }
-
-        .controls-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            align-items: center;
-        }
-
-        .btn-primary {
-            background-color: var(--accent-blue);
-            border-color: var(--accent-blue);
-            color: #fff;
-            font-weight: 600;
-        }
-        .btn-primary:hover { background-color: var(--accent-blue-hover); }
-
-        .btn-icon {
-            padding: 8px 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.85rem;
-        }
-
-        /* Faixa de Direção */
-        #direction-banner {
-            background-color: var(--accent-amber-bg);
-            border-bottom: 1px solid rgba(245, 158, 11, 0.3);
-            color: #fcd34d;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Main Workspace */
-        main {
-            flex: 1;
-            max-width: 900px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        /* Área de Cifra / Baixo / Direção */
-        .stage-view-container {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            height: 60vh;
-            overflow-y: auto;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
-            position: relative;
-        }
-
-        .chord-text {
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            font-size: 1.1rem;
-            line-height: 1.8;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        .chord {
-            color: var(--chord-color);
-            font-weight: bold;
-        }
-
-        .section-title {
-            color: var(--section-color);
-            font-weight: bold;
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-            display: block;
-            font-size: 1.15rem;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 4px;
-        }
-
-        /* Rodapé / Setlist Nav */
-        footer {
-            background-color: var(--bg-card);
-            border-top: 1px solid var(--border-color);
-            padding: 12px 16px;
-            position: sticky;
-            bottom: 0;
-            z-index: 100;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* Modais & Painéis */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            padding: 16px;
-        }
-        .modal-overlay.active { display: flex; }
-
-        .modal-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            width: 100%;
-            max-width: 700px;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-header {
-            padding: 16px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-body {
-            padding: 16px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .modal-footer {
-            padding: 16px;
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            justify-content: flex-end;
-            gap: 8px;
-        }
-
-        /* Utilidades Visuais */
-        .badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            background-color: rgba(59, 130, 246, 0.2);
-            color: var(--accent-blue);
-        }
-
-        .metronome-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: var(--text-muted);
-            display: inline-block;
-            transition: background-color 0.1s;
-        }
-        .metronome-indicator.beat {
-            background-color: var(--accent-blue);
-            box-shadow: 0 0 8px var(--accent-blue);
-        }
-        .metronome-indicator.beat-accent {
-            background-color: var(--accent-pink);
-            box-shadow: 0 0 12px var(--accent-pink);
-        }
-
-        .hidden { display: none !important; }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#09090b">
+<title>Worship Stage — Setlist & Cifras</title>
+<style>
+:root{--bg:#09090b;--panel:#111318;--panel2:#181b22;--line:#2a2e38;--text:#f4f4f5;--muted:#a1a1aa;--blue:#60a5fa;--rose:#fb7185;--amber:#fbbf24;--green:#34d399;--fs:18px}*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh;padding-bottom:86px}.top{position:sticky;top:0;z-index:20;background:rgba(17,19,24,.97);border-bottom:1px solid var(--line);padding:max(10px,env(safe-area-inset-top)) 14px 10px;backdrop-filter:blur(12px)}.toprow{max-width:1100px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}.eyebrow{color:var(--blue);font-size:11px;font-weight:900;letter-spacing:.13em}.title{font-size:clamp(18px,4vw,27px);font-weight:850;margin:2px 0}.meta{color:var(--muted);font-size:13px}.next{min-width:160px;text-align:right;color:var(--muted);font-size:11px}.next b{display:block;color:var(--text);font-size:13px;margin-top:3px}.toolbar{max-width:1100px;margin:10px auto 0;display:flex;gap:8px;overflow:auto;padding-bottom:2px}.btn{min-height:42px;border:1px solid var(--line);border-radius:11px;background:var(--panel2);color:var(--text);padding:8px 12px;font-weight:750;white-space:nowrap}.btn:hover{border-color:#525866}.btn:focus-visible,.tab:focus-visible{outline:3px solid var(--blue);outline-offset:2px}.btn.primary{background:#2563eb;border-color:#3b82f6}.btn.danger{background:#7f1d1d;border-color:#ef4444}.btn.good{background:#065f46;border-color:#10b981}.beat{display:inline-block;width:10px;height:10px;border-radius:50%;background:#52525b;margin-right:6px}.beat.on{background:var(--blue);box-shadow:0 0 0 6px #60a5fa22}.direction{background:#302207;border-bottom:1px solid #6b4b0a;color:#fde68a;padding:9px 16px;text-align:center;font-size:13px}.tabs{max-width:1100px;margin:14px auto 0;padding:0 14px;display:flex;gap:8px}.tab{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:10px;padding:9px 13px;font-weight:800}.tab.active{color:white;background:#1d4ed8;border-color:#3b82f6}.main{max-width:1100px;margin:auto;padding:14px}.stage{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}.chords{padding:clamp(16px,4vw,30px);font:var(--fs)/1.8 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap;min-height:54vh}.section{display:block;color:var(--rose);font-weight:900;margin:18px 0 4px;letter-spacing:.04em}.chord{color:var(--blue);font-weight:900}.cue{color:var(--amber);font-weight:900}.muted{color:var(--muted)}.panel{display:none;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}.panel.active{display:block}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field label{font-size:12px;color:var(--muted);font-weight:800}.field input,.field select,.field textarea{width:100%;background:#0d0f13;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px}.field textarea{min-height:220px;resize:vertical}.songlist{display:grid;gap:9px;margin-top:14px}.songrow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;background:#0d0f13;border:1px solid var(--line);border-radius:12px;padding:12px}.songrow strong{display:block}.songrow small{color:var(--muted)}.actions{display:flex;gap:6px;flex-wrap:wrap}.status{color:var(--muted);font-size:12px;margin-top:10px;min-height:18px}.footer{position:fixed;bottom:0;left:0;right:0;z-index:25;background:rgba(17,19,24,.98);border-top:1px solid var(--line);padding:10px max(12px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom));display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}.footer .right{text-align:right}.counter{text-align:center;color:var(--muted);font-size:12px}.locked .dangerous{opacity:.35;pointer-events:none}.stage-only .tabs,.stage-only #libraryPanel,.stage-only #editorPanel{display:none!important}.stage-only .main{max-width:none;padding:0}.stage-only .stage{border-radius:0;border-left:0;border-right:0}.toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%);background:#27272a;border:1px solid #52525b;padding:10px 14px;border-radius:10px;z-index:50;display:none}.empty{color:var(--muted);padding:30px;text-align:center}@media(max-width:620px){.next{min-width:115px}.toolbar{padding-right:4px}.btn{min-height:46px}.chords{font-size:calc(var(--fs) * .9)}.songrow{grid-template-columns:1fr}.actions .btn{flex:1}.hide-sm{display:none}}
+</style>
 </head>
 <body>
-
-    <!-- CABEÇALHO DO PALCO -->
-    <header id="stage-header">
-        <div class="header-content">
-            <div class="song-info">
-                <h1 id="header-title">Carregando repertório...</h1>
-                <p id="header-meta">Tom: - | BPM: - | Próxima: -</p>
-            </div>
-
-            <div class="controls-bar" role="toolbar" aria-label="Controles principais de palco">
-                <!-- Metrônomo -->
-                <button type="button" onclick="toggleMetronome()" id="btn-metronome" class="btn-icon" aria-label="Ligar ou desligar metrônomo">
-                    <span id="metronome-dot" class="metronome-indicator"></span>
-                    <span id="metronome-label">Metrônomo</span>
-                </button>
-
-                <!-- Controles de Transposição -->
-                <div style="display: flex; align-items: center; gap: 4px;" aria-label="Controles de transposição">
-                    <button type="button" onclick="transpose(-1)" aria-label="Baixar um semitom">-</button>
-                    <span id="display-key" style="font-weight: bold; min-width: 30px; text-align: center;">C</span>
-                    <button type="button" onclick="transpose(1)" aria-label="Subir um semitom">+</button>
-                </div>
-
-                <!-- Modos de Visualização de Conteúdo -->
-                <select id="select-view-mode" onchange="changeViewMode(this.value)" aria-label="Modo de exibição">
-                    <option value="chord">Modo Cifra</option>
-                    <option value="bass">Modo Baixo</option>
-                    <option value="direction">Modo Direção</option>
-                </select>
-
-                <!-- Modos de Navegação -->
-                <select id="select-nav-mode" onchange="changeNavMode(this.value)" aria-label="Modo de navegação">
-                    <option value="scroll">Rolagem Contínua</option>
-                    <option value="pages">Modo Páginas</option>
-                </select>
-
-                <!-- Botões de Ação Geral -->
-                <button type="button" onclick="openLibraryModal()" class="btn-icon">Biblioteca</button>
-                <button type="button" onclick="toggleStageMode()" id="btn-stage-mode" class="btn-icon">Modo Palco</button>
-                <button type="button" onclick="toggleLock()" id="btn-lock" class="btn-icon" aria-label="Travar controles">🔒 Travar</button>
-            </div>
-        </div>
-    </header>
-
-    <!-- FAIXA DE DIREÇÃO MUSICAL -->
-    <div id="direction-banner" role="region" aria-label="Instruções de direção musical">
-        <span>📢 Direção:</span> <span id="banner-note">Aguardando início do culto...</span>
-    </div>
-
-    <!-- ÁREA PRINCIPAL DA CIFRA / CONTEÚDO -->
-    <main>
-        <!-- Sub-barra de Rolagem / Páginas / BPM Rápido -->
-        <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.85rem;">
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <span>BPM:</span>
-                <button type="button" onclick="adjustBpm(-4)">-4</button>
-                <button type="button" onclick="adjustBpm(-1)">-1</button>
-                <strong id="display-bpm">72</strong>
-                <button type="button" onclick="adjustBpm(1)">+1</button>
-                <button type="button" onclick="adjustBpm(4)">+4</button>
-                <button type="button" onclick="saveTempBpm()" class="badge" style="cursor:pointer; border:none;">Salvar BPM</button>
-            </div>
-
-            <div id="scroll-page-controls" style="display: flex; gap: 8px; align-items: center;">
-                <button type="button" onclick="toggleAutoPlay()" id="btn-autoplay" class="btn-primary">▶ Iniciar Auto</button>
-                <span id="page-indicator" class="hidden">Página 1/1</span>
-            </div>
-        </div>
-
-        <!-- Container visualizador com rolagem própria -->
-        <div class="stage-view-container" id="stage-container">
-            <div id="content-display" class="chord-text" tabindex="0" aria-live="polite">
-                Carregando cifras...
-            </div>
-        </div>
-    </main>
-
-    <!-- RODAPÉ DE SETLIST -->
-    <footer>
-        <div class="footer-content">
-            <button type="button" onclick="prevSong()" class="btn-icon">◀ Anterior</button>
-            <div id="footer-setlist-info" style="font-size: 0.9rem; text-align: center; color: var(--text-muted);">
-                Música 1 de 6 — Próxima: Nenhuma
-            </div>
-            <button type="button" onclick="nextSong()" class="btn-icon btn-primary">Próxima ▶</button>
-        </div>
-    </footer>
-
-    <!-- MODAL DE BIBLIOTECA / SETLIST -->
-    <div id="library-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="lib-title">
-        <div class="modal-card">
-            <div class="modal-header">
-                <h2 id="lib-title" style="font-size: 1.1rem;">Biblioteca e Setlist</h2>
-                <button type="button" onclick="closeLibraryModal()">✕</button>
-            </div>
-            <div class="modal-body">
-                <div style="display: flex; gap: 8px;">
-                    <input type="text" id="lib-search" placeholder="Buscar música ou artista..." oninput="renderLibraryList()" style="flex: 1;">
-                    <button type="button" onclick="openEditorModal(null)" class="btn-primary">+ Nova Música</button>
-                    <button type="button" onclick="exportData()">Exportar JSON</button>
-                    <label class="btn-icon" style="cursor: pointer; display: inline-flex; align-items: center;">
-                        Importar JSON <input type="file" id="import-file" accept=".json" onchange="importData(event)" class="hidden">
-                    </label>
-                </div>
-                <div id="library-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 400px; overflow-y: auto;">
-                    <!-- Preenchido via JS -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" onclick="closeLibraryModal()" class="btn-primary">Fechar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL DE EDITOR DE MÚSICA -->
-    <div id="editor-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="editor-title">
-        <div class="modal-card" style="max-width: 800px;">
-            <div class="modal-header">
-                <h2 id="editor-title" style="font-size: 1.1rem;">Editor de Música</h2>
-                <button type="button" onclick="closeEditorModal()">✕</button>
-            </div>
-            <div class="modal-body">
-                <input type="hidden" id="edit-id">
-                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 8px;">
-                    <div>
-                        <label style="font-size:0.8rem; display:block;">Título</label>
-                        <input type="text" id="edit-title" style="width: 100%;">
-                    </div>
-                    <div>
-                        <label style="font-size:0.8rem; display:block;">Artista</label>
-                        <input type="text" id="edit-artist" style="width: 100%;">
-                    </div>
-                    <div>
-                        <label style="font-size:0.8rem; display:block;">Tom Original</label>
-                        <input type="text" id="edit-key" style="width: 100%;">
-                    </div>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px;">
-                    <div>
-                        <label style="font-size:0.8rem; display:block;">BPM</label>
-                        <input type="number" id="edit-bpm" style="width: 100%;">
-                    </div>
-                    <div>
-                        <label style="font-size:0.8rem; display:block;">Compasso</label>
-                        <input type="text" id="edit-meter" style="width: 100%;">
-                    </div>
-                    <div>
-                        <label style="font-size:0.8rem; display:block;">Estilo</label>
-                        <input type="text" id="edit-style" style="width: 100%;">
-                    </div>
-                </div>
-                <div>
-                    <label style="font-size:0.8rem; display:block;">Nota Geral de Direção</label>
-                    <input type="text" id="edit-note" style="width: 100%;">
-                </div>
-                <div>
-                    <label style="font-size:0.8rem; display:block;">Cifra Completa</label>
-                    <textarea id="edit-chart" rows="6" style="width: 100%; font-family: monospace;"></textarea>
-                </div>
-                <div>
-                    <label style="font-size:0.8rem; display:block;">Visualização para Baixo</label>
-                    <textarea id="edit-bass" rows="4" style="width: 100%; font-family: monospace;"></textarea>
-                </div>
-                <div>
-                    <label style="font-size:0.8rem; display:block;">Roteiro de Direção</label>
-                    <textarea id="edit-dir" rows="4" style="width: 100%; font-family: monospace;"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" onclick="closeEditorModal()">Cancelar</button>
-                <button type="button" onclick="saveMusicFromEditor()" class="btn-primary">Salvar Música</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPT DA APLICAÇÃO CORRIGIDO E ROBUSTO -->
-    <script>
-        const initialPlaylist = [
-            {
-                id: "santo-pra-sempre",
-                title: "Santo Pra Sempre",
-                artist: "Gabriel Guedes",
-                originalKey: "C",
-                currentKey: "C",
-                transpose: 0,
-                bpm: 72,
-                meter: "4/4",
-                style: "Adoração",
-                directionNote: "Manter groove constante no baixo. Subir dinâmica a partir do 2º refrão.",
-                chart: "(Intro) F9  Am7  G  /  Em7  Am7  G\n\n(Verso 1)\nC\nAs muitas gerações rendidas em louvor\nAm7          G    F9\nCantando ao Cordeiro uma canção\nC\nOs que em Ti se foram e os que hão de crer\nAm7          G    F9\nCantando ao Cordeiro uma canção\n\n(Pré-Refrão)\nF9          Am7\nTeu nome é o mais alto, Teu nome é o maior\nAm7         F9\nTeu nome é sobre todos\nF9         Am7\nGovernos e poderes, Teu nome é sobre todos\n\n(Refrão)\nF9         Am7    G\nE os anjos clamam: Santo\nEm7        Am7\nToda criação: Santo\nDm7        G\nExaltado És, Santo\nC\nSanto pra sempre",
-                bassChart: "INTRO\nF | Am | G | Em | Am | G\n\nVERSO\nC | C | Am | G F\n\nREFRÃO\nF | Am G | Em | Am | Dm | G | C",
-                directorChart: "INTRO: Pad + Guit leve\nVERSO: Baixo pontual\nREFRÃO: Banda cheia"
-            },
-            {
-                id: "maravilhado",
-                title: "Maravilhado",
-                artist: "Nívea Soares",
-                originalKey: "G",
-                currentKey: "G",
-                transpose: 0,
-                bpm: 68,
-                meter: "4/4",
-                style: "Contemplativa",
-                directionNote: "Baixo limpo e notas longas nos versos. Entrar com peso sutil na ponte.",
-                chart: "(Intro) G  Bm7  Em7  C9\n\n(Verso)\nEm7         C9\nTu reinas no trono dos céus\nG           D4\nA criação se prostra aos Teus pés\nEm7         C9\nTu reinas vestido de glória\nG           D4\nOs anjos Te adoram aos Teus pés\n\n(Pré-Refrão)\nEm7         C9\nPra sempre governarás\nG/B         C9\nTeu reino não passará\n\n(Refrão)\nG           D/F#\nOh Santo Deus, fico maravilhado\nEm7         C9\nTu és muito mais do que eu possa expressar",
-                bassChart: "INTRO\nG | Bm | Em | C\n\nVERSO\nEm | C | G | D\n\nREFRÃO\nG | D/F# | Em | C",
-                directorChart: "INTRO: Acústico\nVERSO: Voz e Piano\nREFRÃO: Crescendo progressivo"
-            },
-            {
-                id: "ele-e-exaltado",
-                title: "Ele é Exaltado",
-                artist: "Adhemar de Campos",
-                originalKey: "G",
-                currentKey: "G",
-                transpose: 0,
-                bpm: 80,
-                meter: "4/4",
-                style: "Congregacional",
-                directionNote: "Ritmo alegre e marcado. Atenção na passagem de acordes.",
-                chart: "(Intro) G  G/B  C9  D/F#\n\n(Verso)\nG\nEle é exaltado, o rei é exaltado nos céus\nC/E        D/F#\nEu o louvarei\nG\nEle é exaltado, pra sempre exaltado\nC    D    C/E  D/F#\nO seu nome louvarei\n\n(Refrão)\nAm7        Am7/G    D\nEle é o Senhor, sua verdade vai sempre reinar\nAm7        Am7/G    D/F#  C/E  D\nTerra e céus glorificam seu santo nome",
-                bassChart: "INTRO\nG | G/B | C | D\n\nVERSO\nG | C/E D | G | C D\n\nREFRÃO\nAm | D | G C | Am | D | G",
-                directorChart: "VERSO: Ritmo firme\nREFRÃO: Toda a congregação cantando forte"
-            },
-            {
-                id: "maranata",
-                title: "Maranata",
-                artist: "Ministério Avivah",
-                originalKey: "D",
-                currentKey: "D",
-                transpose: 0,
-                bpm: 76,
-                meter: "4/4",
-                style: "Celebração",
-                directionNote: "Manter levada firme no refrão para embalar a congregação.",
-                chart: "(Intro) Bm7  G2  D  A4\n\n(Verso)\nBm7         G2\nTu és a minha luz, a minha salvação\nC           A4\nE a Ti me renderei\nBm7         G2\nSe ao Teu lado estou, seguro em Tuas mãos\nD           A4\nEu nada temerei\n\n(Refrão)\nG2    D     Bm7\nSó em Ti confiarei, eu nada temerei\nA4\nEm frente eu irei, pois eu sei que vivo estás",
-                bassChart: "INTRO\nBm | G | D | A\n\nVERSO\nBm | G | C | A\n\nREFRÃO\nG | D | Bm | A",
-                directorChart: "VERSO: Contido\nREFRÃO: Abertura total da banda"
-            },
-            {
-                id: "medley-teu-reino-pai-nosso",
-                title: "Medley: Teu Reino + Pai Nosso",
-                artist: "Nívea Soares / Ibab",
-                originalKey: "D",
-                currentKey: "D",
-                transpose: 0,
-                bpm: 70,
-                meter: "4/4",
-                style: "Oração",
-                directionNote: "Medley fluido. Fazer transição suave sem quebrar andamento.",
-                chart: "--- PARTE 1: Teu Reino ---\n(Intro) D  A/C#  Bm7  G\n\nD                   A/C#\nO Teu reino venha sobre nós\nBm7                   G\nA Tua vontade reine em nosso coração\n\n--- PARTE 2: Pai Nosso ---\nD               A/C#\nPai nosso, que estás nos céus\nBm7             G\nSantificado seja o Teu nome",
-                bassChart: "TEU REINO\nD | A/C# | Bm | G\n\nPAI NOSSO\nD | A/C# | Bm | G",
-                directorChart: "FLUXO: Oração e clamor contínuo"
-            },
-            {
-                id: "jesus-e-o-rei-da-gloria",
-                title: "Jesus é o Rei da Glória",
-                artist: "Daniel Souza",
-                originalKey: "G",
-                currentKey: "G",
-                transpose: 0,
-                bpm: 84,
-                meter: "4/4",
-                style: "Celebração com Modulação",
-                directionNote: "ATENÇÃO À MODULAÇÃO: O segundo refrão sobe para A Maior.",
-                chart: "(Intro) G  C  D  G\n\n(Verso - Tom: G)\nG               C\nJesus é o Rei da glória\nD               G\nSenhor dos senhores, Deus de amor\n\n(Refrão - Tom: G)\nG               C\nGlória, glória, ao Cordeiro\nD               G\nGlória, glória, ao Rei dos reis\n\n=== MODULAÇÃO PARA A MAIOR ===\n(Refrão Final - Tom: A)\nA               D\nGlória, glória, ao Cordeiro\nE               A\nGlória, glória, ao Rei dos reis",
-                bassChart: "VERSO\nG | C | D | G\n\nREFRÃO\nG | C | D | G\n\nMODULAÇÃO\nA | D | E | A",
-                directorChart: "MODULAÇÃO: Sinalizar virada rigorosa para A maior"
-            }
-        ];
-
-        let state = {
-            library: [],
-            setlist: [],
-            currentIndex: 0,
-            viewMode: "chord",
-            navMode: "scroll",
-            transposition: 0,
-            tempBpm: 72,
-            isLocked: false,
-            isStageMode: false,
-            isAutoPlaying: false,
-            isMetronomeActive: false
-        };
-
-        let autoScrollInterval = null;
-        let metronomeTimer = null;
-        let audioCtx = null;
-
-        function initApp() {
-            loadFromLocalStorage();
-            if (!state.library || state.library.length === 0) {
-                state.library = JSON.parse(JSON.stringify(initialPlaylist));
-                state.setlist = state.library.map(m => m.id);
-                saveToLocalStorage();
-            }
-            renderCurrentSong();
-        }
-
-        function saveToLocalStorage() {
-            try {
-                localStorage.setItem('worship_stage_lib', JSON.stringify(state.library));
-                localStorage.setItem('worship_stage_setlist', JSON.stringify(state.setlist));
-                localStorage.setItem('worship_stage_index', state.currentIndex);
-            } catch (e) {
-                console.error("Erro ao salvar dados locais", e);
-            }
-        }
-
-        function loadFromLocalStorage() {
-            try {
-                const lib = localStorage.getItem('worship_stage_lib');
-                const set = localStorage.getItem('worship_stage_setlist');
-                const idx = localStorage.getItem('worship_stage_index');
-                if (lib) state.library = JSON.parse(lib);
-                if (set) state.setlist = JSON.parse(set);
-                if (idx !== null) state.currentIndex = parseInt(idx, 10);
-            } catch (e) {
-                console.error("Erro ao carregar dados locais", e);
-            }
-        }
-
-        function getCurrentSong() {
-            if (!state.setlist || state.setlist.length === 0) return null;
-            if (state.currentIndex >= state.setlist.length) state.currentIndex = 0;
-            const songId = state.setlist[state.currentIndex];
-            return state.library.find(m => m.id === songId) || state.library[0];
-        }
-
-        function renderCurrentSong() {
-            const song = getCurrentSong();
-            if (!song) {
-                document.getElementById('header-title').innerText = "Nenhuma música no setlist";
-                document.getElementById('header-meta').innerText = "";
-                document.getElementById('content-display').innerHTML = "Adicione músicas pela Biblioteca.";
-                return;
-            }
-
-            document.getElementById('header-title').innerText = song.title + " (" + song.artist + ")";
-            const nextSongId = state.setlist[state.currentIndex + 1];
-            const nextSong = state.library.find(m => m.id === nextSongId);
-            const nextName = nextSong ? nextSong.title : "Fim do Setlist";
-
-            state.tempBpm = song.bpm || 72;
-            document.getElementById('display-bpm').innerText = state.tempBpm;
-            document.getElementById('display-key').innerText = song.currentKey || song.originalKey || "C";
-            document.getElementById('header-meta').innerText = `Tom: ${song.currentKey || song.originalKey || "C"} | BPM: ${state.tempBpm} | Próxima: ${nextName}`;
-            document.getElementById('banner-note').innerText = song.directionNote || "Sem observações específicas.";
-
-            let rawContent = "";
-            if (state.viewMode === "bass") {
-                rawContent = song.bassChart || song.chart;
-            } else if (state.viewMode === "direction") {
-                rawContent = song.directorChart || song.directionNote;
-            } else {
-                rawContent = song.chart;
-            }
-
-            document.getElementById('content-display').innerHTML = formatChartHtml(rawContent);
-            document.getElementById('footer-setlist-info').innerText = `Música ${state.currentIndex + 1} de ${state.setlist.length} — Próxima: ${nextName}`;
-
-            if (state.isMetronomeActive) {
-                restartMetronome();
-            }
-        }
-
-        function formatChartHtml(text) {
-            if (!text) return "";
-            const lines = text.split('\n');
-            return lines.map(line => {
-                let trimmed = line.trim();
-                if ((trimmed.startsWith('(') && trimmed.endsWith(')')) || trimmed.startsWith('---') || trimmed.includes(':')) {
-                    if (trimmed.startsWith('(') || trimmed.startsWith('---') || trimmed.endsWith(':')) {
-                        return `<span class="section-title">${escapeHtml(trimmed)}</span>`;
-                    }
-                }
-                return escapeHtml(line);
-            }).join('\n');
-        }
-
-        function escapeHtml(str) {
-            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        }
-
-        function nextSong() {
-            if (state.isLocked) return;
-            if (state.currentIndex < state.setlist.length - 1) {
-                state.currentIndex++;
-                stopAutoPlay();
-                renderCurrentSong();
-                saveToLocalStorage();
-            }
-        }
-
-        function prevSong() {
-            if (state.isLocked) return;
-            if (state.currentIndex > 0) {
-                state.currentIndex--;
-                stopAutoPlay();
-                renderCurrentSong();
-                saveToLocalStorage();
-            }
-        }
-
-        function changeViewMode(mode) {
-            state.viewMode = mode;
-            renderCurrentSong();
-        }
-
-        function changeNavMode(mode) {
-            state.navMode = mode;
-            const pageInd = document.getElementById('page-indicator');
-            if (mode === 'pages') {
-                pageInd.classList.remove('hidden');
-            } else {
-                pageInd.classList.add('hidden');
-            }
-        }
-
-        function adjustBpm(amount) {
-            if (state.isLocked) return;
-            state.tempBpm = Math.max(30, Math.min(240, state.tempBpm + amount));
-            document.getElementById('display-bpm').innerText = state.tempBpm;
-            if (state.isMetronomeActive) restartMetronome();
-        }
-
-        function saveTempBpm() {
-            const song = getCurrentSong();
-            if (song) {
-                song.bpm = state.tempBpm;
-                saveToLocalStorage();
-                alert("BPM salvo na música com sucesso!");
-            }
-        }
-
-        function toggleMetronome() {
-            state.isMetronomeActive = !state.isMetronomeActive;
-            const btn = document.getElementById('btn-metronome');
-            if (state.isMetronomeActive) {
-                btn.style.borderColor = 'var(--accent-blue)';
-                startMetronome();
-            } else {
-                btn.style.borderColor = 'var(--border-color)';
-                stopMetronome();
-            }
-        }
-
-        function startMetronome() {
-            stopMetronome();
-            if (!audioCtx) {
-                const AudioContext = window.AudioContext || window.webkitAudioContext;
-                if (AudioContext) audioCtx = new AudioContext();
-            }
-            if (audioCtx && audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
-            let beatCount = 0;
-            const intervalMs = (60000 / state.tempBpm);
-            metronomeTimer = setInterval(() => {
-                playClick(beatCount === 0);
-                flashDot(beatCount === 0);
-                beatCount = (beatCount + 4) % 4 === 0 ? 1 : beatCount + 1;
-            }, intervalMs);
-        }
-
-        function stopMetronome() {
-            if (metronomeTimer) clearInterval(metronomeTimer);
-            metronomeTimer = null;
-            const dot = document.getElementById('metronome-dot');
-            if (dot) dot.className = "metronome-indicator";
-        }
-
-        function restartMetronome() {
-            startMetronome();
-        }
-
-        function playClick(isAccent) {
-            if (!audioCtx) return;
-            try {
-                const osc = audioCtx.createOscillator();
-                const envelope = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.value = isAccent ? 880 : 440;
-                envelope.gain.setValueAtTime(1, audioCtx.currentTime);
-                envelope.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
-                osc.connect(envelope);
-                envelope.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.05);
-            } catch(e) {}
-        }
-
-        function flashDot(isAccent) {
-            const dot = document.getElementById('metronome-dot');
-            if (!dot) return;
-            dot.className = "metronome-indicator " + (isAccent ? "beat-accent" : "beat");
-            setTimeout(() => {
-                if (dot) dot.className = "metronome-indicator";
-            }, 100);
-        }
-
-        function toggleAutoPlay() {
-            state.isAutoPlaying = !state.isAutoPlaying;
-            const btn = document.getElementById('btn-autoplay');
-            if (state.isAutoPlaying) {
-                if(btn) btn.innerText = "⏸ Pausar Auto";
-                startAutoScroll();
-            } else {
-                if(btn) btn.innerText = "▶ Iniciar Auto";
-                stopAutoPlay();
-            }
-        }
-
-        function startAutoScroll() {
-            stopAutoPlay();
-            const container = document.getElementById('stage-container');
-            if (!container) return;
-            
-            const song = getCurrentSong();
-            const totalHeight = container.scrollHeight - container.clientHeight;
-            if (totalHeight <= 0) return;
-
-            const estimatedSeconds = (32 * 4 * 60) / (song.bpm || 72);
-            const stepTime = 50;
-            const totalSteps = (estimatedSeconds * 1000) / stepTime;
-            const scrollPerStep = totalHeight / totalSteps;
-
-            autoScrollInterval = setInterval(() => {
-                if (container.scrollTop + container.clientHeight >= container.scrollHeight - 2) {
-                    stopAutoPlay();
-                    return;
-                }
-                container.scrollTop += scrollPerStep;
-            }, stepTime);
-        }
-
-        function stopAutoPlay() {
-            if (autoScrollInterval) clearInterval(autoScrollInterval);
-            autoScrollInterval = null;
-            state.isAutoPlaying = false;
-            const btn = document.getElementById('btn-autoplay');
-            if(btn) btn.innerText = "▶ Iniciar Auto";
-        }
-
-        const scaleSharps = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-        const scaleFlats = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
-
-        function transpose(semitones) {
-            if (state.isLocked) return;
-            state.transposition += semitones;
-            const song = getCurrentSong();
-            if (!song) return;
-
-            let baseKey = song.originalKey || "C";
-            song.currentKey = shiftKey(baseKey, state.transposition);
-            document.getElementById('display-key').innerText = song.currentKey;
-            saveToLocalStorage();
-        }
-
-        function shiftKey(key, semitones) {
-            let idx = scaleSharps.indexOf(key);
-            if (idx === -1) idx = scaleFlats.indexOf(key);
-            if (idx === -1) return key;
-            let newIdx = (idx + semitones) % 12;
-            if (newIdx < 0) newIdx += 12;
-            return scaleSharps[newIdx];
-        }
-
-        function toggleStageMode() {
-            state.isStageMode = !state.isStageMode;
-            const header = document.getElementById('stage-header');
-            const btn = document.getElementById('btn-stage-mode');
-            if (state.isStageMode) {
-                header.classList.add('hidden');
-                if(btn) btn.innerText = "Sair Palco";
-                if (document.documentElement.requestFullscreen) {
-                    document.documentElement.requestFullscreen().catch(() => {});
-                }
-            } else {
-                header.classList.remove('hidden');
-                if(btn) btn.innerText = "Modo Palco";
-                if (document.exitFullscreen && document.fullscreenElement) {
-                    document.exitFullscreen().catch(() => {});
-                }
-            }
-        }
-
-        function toggleLock() {
-            state.isLocked = !state.isLocked;
-            const btn = document.getElementById('btn-lock');
-            if (state.isLocked) {
-                if(btn) {
-                    btn.innerText = "🔓 Destravar";
-                    btn.style.backgroundColor = "var(--danger)";
-                }
-            } else {
-                if(btn) {
-                    btn.innerText = "🔒 Travar";
-                    btn.style.backgroundColor = "";
-                }
-            }
-        }
-
-        function openLibraryModal() {
-            renderLibraryList();
-            document.getElementById('library-modal').classList.add('active');
-        }
-
-        function closeLibraryModal() {
-            document.getElementById('library-modal').classList.remove('active');
-        }
-
-        function renderLibraryList() {
-            const container = document.getElementById('library-list');
-            const searchInput = document.getElementById('lib-search');
-            if (!container || !searchInput) return;
-            
-            const search = searchInput.value.toLowerCase();
-            container.innerHTML = "";
-
-            state.library.forEach((song) => {
-                if (search && !song.title.toLowerCase().includes(search) && !song.artist.toLowerCase().includes(search)) return;
-
-                const div = document.createElement('div');
-                div.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: var(--bg-main); padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color);";
-                div.innerHTML = `
-                    <div>
-                        <strong>${escapeHtml(song.title)}</strong> <span style="color: var(--text-muted); font-size: 0.8rem;">(${escapeHtml(song.artist)})</span>
-                    </div>
-                    <div style="display: flex; gap: 4px;">
-                        <button type="button" onclick="addToSetlist('${song.id}')">Adicionar</button>
-                        <button type="button" onclick="openEditorModal('${song.id}')">Editar</button>
-                        <button type="button" onclick="deleteMusic('${song.id}')" style="color: var(--danger);">Excluir</button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function addToSetlist(id) {
-            state.setlist.push(id);
-            saveToLocalStorage();
-            alert("Música adicionada ao setlist!");
-        }
-
-        function deleteMusic(id) {
-            if (confirm("Tem certeza que deseja excluir esta música da biblioteca?")) {
-                state.library = state.library.filter(m => m.id !== id);
-                state.setlist = state.setlist.filter(sId => sId !== id);
-                saveToLocalStorage();
-                renderLibraryList();
-                renderCurrentSong();
-            }
-        }
-
-        function openEditorModal(id) {
-            const modal = document.getElementById('editor-modal');
-            modal.classList.add('active');
-
-            if (id) {
-                const song = state.library.find(m => m.id === id);
-                if (song) {
-                    document.getElementById('edit-id').value = song.id;
-                    document.getElementById('edit-title').value = song.title;
-                    document.getElementById('edit-artist').value = song.artist;
-                    document.getElementById('edit-key').value = song.originalKey;
-                    document.getElementById('edit-bpm').value = song.bpm;
-                    document.getElementById('edit-meter').value = song.meter;
-                    document.getElementById('edit-style').value = song.style;
-                    document.getElementById('edit-note').value = song.directionNote;
-                    document.getElementById('edit-chart').value = song.chart;
-                    document.getElementById('edit-bass').value = song.bassChart || "";
-                    document.getElementById('edit-dir').value = song.directorChart || "";
-                }
-            } else {
-                document.getElementById('edit-id').value = "";
-                document.getElementById('edit-title').value = "";
-                document.getElementById('edit-artist').value = "";
-                document.getElementById('edit-key').value = "C";
-                document.getElementById('edit-bpm').value = 72;
-                document.getElementById('edit-meter').value = "4/4";
-                document.getElementById('edit-style').value = "Adoração";
-                document.getElementById('edit-note').value = "";
-                document.getElementById('edit-chart').value = "";
-                document.getElementById('edit-bass').value = "";
-                document.getElementById('edit-dir').value = "";
-            }
-        }
-
-        function closeEditorModal() {
-            document.getElementById('editor-modal').classList.remove('active');
-        }
-
-        function saveMusicFromEditor() {
-            const idInput = document.getElementById('edit-id').value;
-            const title = document.getElementById('edit-title').value;
-            if (!title) {
-                alert("O título é obrigatório.");
-                return;
-            }
-
-            const songData = {
-                id: idInput || "song-" + Date.now(),
-                title: title,
-                artist: document.getElementById('edit-artist').value || "Desconhecido",
-                originalKey: document.getElementById('edit-key').value || "C",
-                currentKey: document.getElementById('edit-key').value || "C",
-                transpose: 0,
-                bpm: parseInt(document.getElementById('edit-bpm').value, 10) || 72,
-                meter: document.getElementById('edit-meter').value || "4/4",
-                style: document.getElementById('edit-style').value || "Geral",
-                directionNote: document.getElementById('edit-note').value,
-                chart: document.getElementById('edit-chart').value,
-                bassChart: document.getElementById('edit-bass').value,
-                directorChart: document.getElementById('edit-dir').value
-            };
-
-            if (idInput) {
-                const idx = state.library.findIndex(m => m.id === idInput);
-                if (idx !== -1) state.library[idx] = songData;
-            } else {
-                state.library.push(songData);
-                state.setlist.push(songData.id);
-            }
-
-            saveToLocalStorage();
-            closeEditorModal();
-            renderLibraryList();
-            renderCurrentSong();
-            alert("Música salva com sucesso!");
-        }
-
-        function exportData() {
-            const data = {
-                version: "1.0",
-                library: state.library,
-                setlist: state.setlist
-            };
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `worship-stage-backup-${Date.now()}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const parsed = JSON.parse(e.target.result);
-                    if (parsed.library && Array.isArray(parsed.library)) {
-                        state.library = parsed.library;
-                        state.setlist = parsed.setlist || parsed.library.map(m => m.id);
-                        state.currentIndex = 0;
-                        saveToLocalStorage();
-                        renderLibraryList();
-                        renderCurrentSong();
-                        alert("Backup importado com sucesso!");
-                    } else {
-                        alert("Arquivo JSON inválido.");
-                    }
-                } catch(err) {
-                    alert("Erro ao ler o arquivo JSON.");
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        window.addEventListener('keydown', (e) => {
-            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
-
-            if (e.key === 'ArrowRight' || e.key === 'PageDown') {
-                nextSong();
-            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-                prevSong();
-            } else if (e.key === ' ') {
-                e.preventDefault();
-                toggleAutoPlay();
-            } else if (e.key.toLowerCase() === 'm') {
-                toggleMetronome();
-            } else if (e.key === '+') {
-                transpose(1);
-            } else if (e.key === '-') {
-                transpose(-1);
-            } else if (e.key.toLowerCase() === 'f') {
-                toggleStageMode();
-            } else if (e.key.toLowerCase() === 'l') {
-                toggleLock();
-            }
-        });
-
-        document.addEventListener('DOMContentLoaded', initApp);
-    </script>
-</body>
-</html>
+<div id="app" class="app">
+<header class="top"><div class="toprow"><div><div class="eyebrow">WORSHIP STAGE • BAIXO / DIREÇÃO</div><div id="songTitle" class="title">Carregando…</div><div id="songMeta" class="meta"></div></div><div class="next">PRÓXIMA<b id="nextSong">—</b></div></div>
+<div class="toolbar">
+<button class="btn" id="metroBtn" type="button"><span id="beat" class="beat"></span><span id="metroLabel">Metrônomo</span></button>
+<button class="btn" id="scrollBtn" type="button">▶ Auto-scroll</button>
+<select id="scrollSpeed" class="btn" aria-label="Velocidade de rolagem"><option value="18">Rolagem 1×</option><option value="28" selected>Rolagem 2×</option><option value="40">Rolagem 3×</option><option value="55">Rolagem 4×</option></select>
+<button class="btn dangerous" id="downBtn" type="button">− Tom</button><button class="btn dangerous" id="upBtn" type="button">+ Tom</button>
+<button class="btn" id="fontDown" type="button">A−</button><button class="btn" id="fontUp" type="button">A+</button>
+<button class="btn" id="wakeBtn" type="button">☀ Tela ativa</button><button class="btn" id="fullBtn" type="button">⛶ Palco</button><button class="btn" id="lockBtn" type="button">🔒 Travar</button>
+</div></header>
+<div class="direction"><b>DIREÇÃO:</b> <span id="directionText">—</span></div>
+<nav class="tabs" aria-label="Modos"><button class="tab active" data-view="cifra">Cifra</button><button class="tab" data-view="baixo">Modo Baixo</button><button class="tab" data-view="direcao">Direção</button><button class="tab" data-view="biblioteca">Biblioteca</button><button class="tab" data-view="editor">Editor</button></nav>
+<main class="main">
+<section class="stage" id="stagePanel"><div id="chordDisplay" class="chords"></div></section>
+<section class="panel" id="libraryPanel"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><h2 style="margin:0">Biblioteca local</h2><p class="muted">Os dados ficam neste navegador. Exporte um backup regularmente.</p></div><div class="actions"><button class="btn" id="newBtn">+ Nova música</button><button class="btn" id="importBtn">Importar JSON</button><button class="btn" id="exportBtn">Exportar JSON</button><input id="fileInput" type="file" accept="application/json,.json" hidden></div></div><div id="songList" class="songlist"></div><div id="libraryStatus" class="status" aria-live="polite"></div></section>
+<section class="panel" id="editorPanel"><h2 id="editorHeading">Nova música</h2><form id="songForm"><input id="songId" type="hidden"><div class="grid"><div class="field"><label for="titleInput">Título *</label><input id="titleInput" required></div><div class="field"><label for="artistInput">Artista</label><input id="artistInput"></div><div class="field"><label for="keyInput">Tom</label><select id="keyInput"><option>C</option><option>Db</option><option>D</option><option>Eb</option><option>E</option><option>F</option><option>F#</option><option>G</option><option>Ab</option><option>A</option><option>Bb</option><option>B</option></select></div><div class="field"><label for="bpmInput">BPM</label><input id="bpmInput" type="number" min="30" max="240" value="72"></div><div class="field"><label for="meterInput">Compasso</label><input id="meterInput" value="4/4"></div><div class="field"><label for="styleInput">Estilo</label><input id="styleInput" placeholder="Adoração, celebração…"></div></div><div class="field" style="margin-top:12px"><label for="directionInput">Nota de direção</label><input id="directionInput" placeholder="Ex.: crescer no segundo refrão"></div><div class="grid" style="margin-top:12px"><div class="field"><label for="chartInput">Cifra completa (use [Intro], [Verso], [Refrão])</label><textarea id="chartInput" placeholder="[Intro]\nC  Am7  F  G\n\n[Verso]\nC ..."></textarea></div><div class="field"><label for="bassInput">Modo Baixo</label><textarea id="bassInput" placeholder="[Intro]\nC | Am7 | F | G"></textarea></div><div class="field"><label for="directorInput">Roteiro de direção</label><textarea id="directorInput" placeholder="[Intro]\nPAD + guitarra\n[Refrão 2]\nBANDA / CRESCE"></textarea></div></div><div class="actions" style="margin-top:14px"><button class="btn primary" type="submit">Salvar música</button><button class="btn" id="cancelEdit" type="button">Cancelar</button></div><div id="formStatus" class="status" aria-live="polite"></div></form></section>
+</main>
+<footer class="footer"><div><button id="prevBtn" class="btn dangerous" type="button">◀ Anterior</button></div><div class="counter"><b id="counter">0 / 0</b><br>SETLIST</div><div class="right"><button id="nextBtn" class="btn primary dangerous" type="button">Próxima ▶</button></div></footer>
+<div id="toast" class="toast" role="status" aria-live="polite"></div></div>
+<script>
+(()=>{'use strict';
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const NOTES_SHARP=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'], NOTES_FLAT=['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+
+const seed = [
+  {
+    id: 'santo-pra-sempre',
+    title: 'Santo Pra Sempre',
+    artist: 'Gabriel Guedes',
+    key: 'C',
+    bpm: 72,
+    meter: '4/4',
+    style: 'Adoração',
+    direction: 'Manter groove constante no baixo. Subir dinâmica a partir do 2º refrão.',
+    chart: '[Intro]\nF9  Am7  G  /  Em7  Am7  G\n\n[Verso 1]\nC\nAs muitas gerações rendidas em louvor\nAm7          G    F9\nCantando ao Cordeiro uma canção\nC\nOs que em Ti se foram e os que hão de crer\nAm7          G    F9\nCantando ao Cordeiro uma canção\n\n[Pré-Refrão]\nF9          Am7\nTeu nome é o mais alto\nG\nTeu nome é o maior\nAm7         F9\nTeu nome é sobre todos\nF9         Am7\nOs tronos e domínios\nG\nGovernos e poderes\nAm7         Dm7\nTeu nome é sobre todos\n\n[Refrão]\nF9         Am7    G\nE os anjos clamam: Santo\nEm7        Am7\nToda criação: Santo\nDm7        G\nExaltado És, Santo\nC\nSanto pra sempre\n\n[Final]\nF9         Am7    G\nO Teu povo canta: Santo\nEm7        Am7\nSim, ao Rei dos Reis, Santo\nDm7        G\nTu sempre serás Santo\nC\nSanto pra sempre',
+    bass: '[Intro]\nF9 | Am7 | G | Em7 | Am7 | G\n\n[Verso]\nC | C | Am7 | G F9\n\n[Pré-Refrão]\nF9 | Am7 | G | Am7 | F9 | G | Dm7\n\n[Refrão]\nF9 | Am7 G | Em7 | Am7 | Dm7 | G | C',
+    director: '[Intro]\nPAD + Guit leve\n\n[Verso]\nBaixo pontual e firme\n\n[Refrão]\nBanda cheia / CRESCER'
+  },
+  {
+    id: 'maravilhado',
+    title: 'Maravilhado',
+    artist: 'Nívea Soares',
+    key: 'G',
+    bpm: 68,
+    meter: '4/4',
+    style: 'Contemplativa',
+    direction: 'Baixo limpo e notas longas nos versos. Entrar com peso sutil na ponte.',
+    chart: '[Intro]\nG  Bm7  Em7  C9\n\n[Verso]\nEm7         C9\nTu reinas no trono dos céus\nG           D4\nA criação se prostra aos Teus pés\nEm7         C9\nTu reinas vestido de glória\nG           D4\nOs anjos Te adoram aos Teus pés\n\n[Pré-Refrão]\nEm7         C9\nPra sempre governarás\nG/B         C9\nTeu reino não passará\n\n[Refrão]\nG           D/F#\nOh Santo Deus, fico maravilhado\nEm7\nTu és muito mais\nC9\nDo que eu possa expressar\nG\nOh Santo Deus\nD/F#\nQuebro o vaso de alabastro\nEm7\nSobre o Deus que sabe me\nC9\nMaravilhar\n\n[Ponte]\nG           D/F#  Em7  C9  G\nDerramo o meu louvor sobre Ti\nG           D/F#  Em7  C9  G\nDerramo o meu amor sobre Ti',
+    bass: '[Intro]\nG | Bm7 | Em7 | C9\n\n[Verso]\nEm7 | C9 | G | D4\n\n[Pré-Refrão]\nEm7 | C9 | G/B | C9\n\n[Refrão]\nG | D/F# | Em7 | C9\n\n[Ponte]\nG | D/F# | Em7 | C9 | G',
+    director: '[Intro]\nAcústico e Piano\n\n[Verso]\nVoz e Baixo suave\n\n[Refrão]\nCrescendo progressivo\n\n[Ponte]\nFluido e congregacional'
+  },
+  {
+    id: 'ele-e-exaltado',
+    title: 'Ele é Exaltado',
+    artist: 'Adhemar de Campos',
+    key: 'G',
+    bpm: 80,
+    meter: '4/4',
+    style: 'Congregacional',
+    direction: 'Ritmo alegre e marcado. Atenção na passagem de acordes.',
+    chart: '[Intro]\nG  G/B  C9  D/F#\n\n[Verso]\nG\nEle é exaltado\nG/B        C9\nO rei é exaltado nos céus\nC/E        D/F#\nEu o louvarei\nG\nEle é exaltado\nG/B\nPra sempre exaltado\nC    D    C/E  D/F#\nO seu nome louva__rei\n\n[Refrão]\nAm7        Am7/G    D\nEle é o Senhor\nG    G/B    C    G/B\nSua verdade vai sempre reinar\nAm7        Am7/G    D/F#  C/E  D\nTerra e céus\nG    G/F    E4  E7\nGlorificam seu santo nome\nAm7        Am/G\nEle é exaltado\nF    D    G    E4  E/G#\nO rei é exaltado nos céus',
+    bass: '[Intro]\nG | G/B | C9 | D/F#\n\n[Verso]\nG | G/B | C9 | C/E D/F# | G | G/B | C | D\n\n[Refrão]\nAm7 | Am7/G | D | G G/B | C G/B | Am7 | Am7/G | D/F# C/E D | G G/F | E4 E7 | Am7 | Am/G | F D | G E4 E/G#',
+    director: '[Intro]\nLevada firme\n\n[Verso]\nRitmo marcado\n\n[Refrão]\nToda a congregação cantando forte'
+  },
+  {
+    id: 'maranata',
+    title: 'Maranata',
+    artist: 'Ministério Avivah',
+    key: 'D',
+    bpm: 76,
+    meter: '4/4',
+    style: 'Celebração',
+    direction: 'Manter levada firme no refrão para embalar a congregação.',
+    chart: '[Intro]\nBm7  G2  D  A4\n\n[Verso]\nBm7         G2\nTu és a minha luz, a minha salvação\nC           A4\nE a Ti me renderei\nBm7         G2\nSe ao Teu lado estou, seguro em Tuas mãos\nD           A4\nEu nada temerei\n\n[Pré-Refrão]\nG2    A4    Bm7    C    A4\nOh oh oh, Tu és santo, ó Senhor\nG2    A4    Bm7    D    A11\nOh oh oh, Tu és digno de louvor\n\n[Refrão]\nG2    D     Bm7\nSó em Ti confiarei, eu nada temerei\nA4          \nEm frente eu irei, pois eu sei que vivo estás\nD           \nE um dia voltarás, do céu pra nos buscar\nBm7         \nPara sempre reinarás, aleluia!\n\n[Ponte]\nD\nVem, Jesus\nG2\nVem, Jesus\nD           A4\nMaranata, ora vem, Senhor Jesus',
+    bass: '[Intro]\nBm7 | G2 | D | A4\n\n[Verso]\nBm7 | G2 | C | A4 | Bm7 | G2 | D | A4\n\n[Pré-Refrão]\nG2 A4 | Bm7 C A4 | G2 A4 | Bm7 D A11\n\n[Refrão]\nG2 D | Bm7 | A4 | D | Bm7',
+    director: '[Intro]\nGuitarras e Pad\n\n[Verso]\nContido\n\n[Refrão]\nAbertura total da banda / CRESCE'
+  },
+  {
+    id: 'medley-teu-reino-pai-nosso',
+    title: 'Medley: Teu Reino + Pai Nosso',
+    artist: 'Nívea Soares / Ibab',
+    key: 'D',
+    bpm: 70,
+    meter: '4/4',
+    style: 'Oração',
+    direction: 'Medley fluido. Fazer transição suave sem quebrar andamento.',
+    chart: '--- PARTE 1: Teu Reino ---\n[Intro]\nD  A/C#  Bm7  G\n\n[Verso]\nD                   A/C#\nO Teu reino venha sobre nós\nBm7                   G\nA Tua vontade reine em nosso coração\nD                   A/C#\nTua luz brilha nas trevas\nBm7                   G\nE não há barreiras para o Teu amor\n\n[Refrão]\nD               A/C#\nVenha o Teu reino, Senhor\nBm7             G\nManifesta a Tua glória aqui\nD               A/C#\nTua é a glória, Teu é o poder\Bm7             G\nPara sempre, amém\n\n--- PARTE 2: Pai Nosso ---\n[Refrão]\nD               A/C#\nPai nosso, que estás nos céus\nBm7             G\nSantificado seja o Teu nome\nD               A/C#\nVenha o Teu reino, seja feita a Tua vontade\nBm7             G                 D\nAssim na terra como no céu',
+    bass: '[Intro]\nD | A/C# | Bm7 | G\n\n[Verso]\nD | A/C# | Bm7 | G\n\n[Refrão]\nD | A/C# | Bm7 | G\n\n[Pai Nosso]\nD | A/C# | Bm7 | G | D',
+    director: '[Intro]\nPiano e Pad suave\n\n[Refrão]\nClamor e Oração contínua\n\n[Transição]\nFluida direto para o Pai Nosso'
+  },
+  {
+    id: 'jesus-e-o-rei-da-gloria',
+    title: 'Jesus é o Rei da Glória',
+    artist: 'Daniel Souza',
+    key: 'G',
+    bpm: 84,
+    meter: '4/4',
+    style: 'Celebração com Modulação',
+    direction: 'ATENÇÃO À MODULAÇÃO: O segundo refrão sobe para A Maior. Sinalizar virada rigorosa!',
+    chart: '[Intro]\nG  C  D  G\n\n[Verso]\nG               C\nJesus é o Rei da glória\nD               G\nSenhor dos senhores, Deus de amor\nG               C\nSua presença é real neste lugar\nD               G\nVamos adorar ao Salvador\n\n[Pré-Refrão]\nAm7             G/B\nToda língua confessará\nC               D\nQue Ele é o Senhor\n\n[Refrão - Tom: G]\nG               C\nGlória, glória, ao Cordeiro\nD               G\nGlória, glória, ao Rei dos reis\nG               C\nGlória, glória, pois Ele é digno\nD               G\nDe todo o nosso louvor\n\n=== MODULAÇÃO PARA A MAIOR ===\n\n[Refrão Final - Tom: A]\nA               D\nGlória, glória, ao Cordeiro\nE               A\nGlória, glória, ao Rei dos reis\nA               D\nGlória, glória, pois Ele é digno\nE               A\nDe todo o nosso louvor',
+    bass: '[Intro]\nG | C | D | G\n\n[Verso]\nG | C | D | G\n\n[Pré-Refrão]\nAm7 | G/B | C | D\n\n[Refrão G]\nG | C | D | G\n\n[MODULAÇÃO]\nA | D | E | A',
+    director: '[Intro]\nBateria marcada\n\n[Refrão]\nBanda cheia\n\n[Virada / Modulação]\nATENÇÃO: Subida rigorosa para tom de A Maior!'
+  }
+];
+
+let songs=load('ws_songs',seed), current=Number(load('ws_current',0)), transpose=0, view='cifra', scrolling=false, scrollRAF=0, lastTime=0, metronome=null, wakeLock=null, locked=false, fontSize=Number(load('ws_font',18));
+function load(k,f){try{const v=localStorage.getItem(k);return v===null?f:JSON.parse(v)}catch{return f}}function save(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function toast(t){const el=$('#toast');el.textContent=t;el.style.display='block';clearTimeout(el._t);el._t=setTimeout(()=>el.style.display='none',2200)}
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function transposeChord(chord,n){if(!n)return chord;return chord.replace(/(^|\/)([A-G])([#b]?)/g,(m,slash,l,a)=>{const src=(l+a), useFlat=a==='b'||['F','Bb','Eb','Ab','Db','Gb'].includes(currentSong().key);let i=NOTES_SHARP.indexOf(src);if(i<0)i=NOTES_FLAT.indexOf(src);if(i<0)return m;return slash+(useFlat?NOTES_FLAT:NOTES_SHARP)[(i+n+120)%12]})}
+function formatText(text){const chordRx=/(^|\s|\|)([A-G](?:#|b)?(?:m|maj|min|dim|aug|sus|add)?\d*(?:\([^)]*\))?(?:\/[A-G](?:#|b)?)?)(?=\s|\||$)/g;return esc(text||'').split('\n').map(line=>{if(/^\s*\[.+\]\s*$/.test(line))return `<span class="section">${line.replace(/[\[\]]/g,'')}</span>`;let x=line.replace(chordRx,(m,p,c)=>p+`<span class="chord">${esc(transposeChord(c,transpose))}</span>`);x=x.replace(/\b(CRESCE|CORTA|BANDA|SEGURA|MODULA|PARA|PAD)\b/gi,'<span class="cue">$1</span>');return x}).join('\n')}
+function currentSong(){if(!songs.length)return {title:'Biblioteca vazia',artist:'',key:'—',bpm:72,meter:'—',style:'',direction:'Cadastre ou importe uma música.',chart:'',bass:'',director:''};current=Math.max(0,Math.min(current,songs.length-1));return songs[current]}
+function render(){const s=currentSong(), next=songs[current+1];$('#songTitle').textContent=s.title;$('#songMeta').textContent=`${s.artist||'Sem artista'} • Tom ${transposeChord(s.key,transpose)} • ${s.bpm} BPM • ${s.meter}${s.style?' • '+s.style:''}`;$('#nextSong').textContent=next?`${next.title} • ${next.key}`:'Fim do setlist';$('#directionText').textContent=s.direction||'Sem nota de direção';const data=view==='baixo'?s.bass:view==='direcao'?s.director:s.chart;$('#chordDisplay').innerHTML=data?formatText(data):'<div class="empty">Sem conteúdo neste modo. Abra o Editor para adicionar.</div>';$('#counter').textContent=songs.length?`${current+1} / ${songs.length}`:'0 / 0';$('#metroLabel').textContent=`${s.bpm} BPM`;document.documentElement.style.setProperty('--fs',fontSize+'px');save('ws_current',current);save('ws_font',fontSize);renderList()}
+function setView(v){view=v;$$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.view===v));$('#stagePanel').style.display=['cifra','baixo','direcao'].includes(v)?'block':'none';$('#libraryPanel').classList.toggle('active',v==='biblioteca');$('#editorPanel').classList.toggle('active',v==='editor');if(['cifra','baixo','direcao'].includes(v))render()}
+function renderList(){const box=$('#songList');if(!songs.length){box.innerHTML='<div class="empty">Nenhuma música cadastrada.</div>';return}box.innerHTML=songs.map((s,i)=>`<div class="songrow"><div><strong>${i+1}. ${esc(s.title)}</strong><small>${esc(s.artist||'Sem artista')} • ${esc(s.key)} • ${Number(s.bpm)||72} BPM</small></div><div class="actions"><button class="btn" data-act="play" data-i="${i}">Abrir</button><button class="btn" data-act="edit" data-i="${i}">Editar</button><button class="btn" data-act="up" data-i="${i}" aria-label="Mover para cima">↑</button><button class="btn" data-act="down" data-i="${i}" aria-label="Mover para baixo">↓</button><button class="btn danger" data-act="del" data-i="${i}">Excluir</button></div></div>`).join('')}
+function stopScroll(){scrolling=false;cancelAnimationFrame(scrollRAF);$('#scrollBtn').textContent='▶ Auto-scroll';$('#scrollBtn').classList.remove('primary')}
+function toggleScroll(){scrolling=!scrolling;$('#scrollBtn').textContent=scrolling?'⏸ Pausar':'▶ Auto-scroll';$('#scrollBtn').classList.toggle('primary',scrolling);lastTime=performance.now();if(scrolling)scrollRAF=requestAnimationFrame(scrollStep)}
+function scrollStep(t){if(!scrolling)return;const speed=Number($('#scrollSpeed').value);window.scrollBy(0,speed*(t-lastTime)/1000);lastTime=t;if(innerHeight+scrollY>=document.documentElement.scrollHeight-4)return stopScroll();scrollRAF=requestAnimationFrame(scrollStep)}
+function toggleMetro(){if(metronome){clearInterval(metronome);metronome=null;$('#metroBtn').classList.remove('danger');$('#beat').classList.remove('on');return}const bpm=Math.max(30,Math.min(240,Number(currentSong().bpm)||72)),tick=()=>{$('#beat').classList.add('on');setTimeout(()=>$('#beat').classList.remove('on'),90)};tick();metronome=setInterval(tick,60000/bpm);$('#metroBtn').classList.add('danger')}
+async function toggleWake(){try{if(wakeLock){await wakeLock.release();wakeLock=null;$('#wakeBtn').classList.remove('good');toast('Tela ativa desativada')}else if('wakeLock'in navigator){wakeLock=await navigator.wakeLock.request('screen');$('#wakeBtn').classList.add('good');wakeLock.addEventListener('release',()=>$('#wakeBtn').classList.remove('good'));toast('Tela será mantida ativa')}else toast('Wake Lock não disponível neste navegador')}catch{toast('Não foi possível manter a tela ativa')}}
+function editSong(i=null){const s=i===null?{id:crypto.randomUUID(),title:'',artist:'',key:'C',bpm:72,meter:'4/4',style:'',direction:'',chart:'',bass:'',director:''}:songs[i];$('#editorHeading').textContent=i===null?'Nova música':'Editar música';$('#songId').value=s.id;['title','artist','key','bpm','meter','style','direction','chart','bass','director'].forEach(k=>$('#'+k+'Input').value=s[k]??'');setView('editor')}
+$$('.tab').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));$('#prevBtn').onclick=()=>{if(locked)return toast('Destrave os controles');if(current>0){current--;transpose=0;stopScroll();scrollTo(0,0);render()}};$('#nextBtn').onclick=()=>{if(locked)return toast('Destrave os controles');if(current<songs.length-1){current++;transpose=0;stopScroll();scrollTo(0,0);render()}};$('#upBtn').onclick=()=>{transpose++;render()};$('#downBtn').onclick=()=>{transpose--;render()};$('#fontUp').onclick=()=>{fontSize=Math.min(32,fontSize+1);render()};$('#fontDown').onclick=()=>{fontSize=Math.max(12,fontSize-1);render()};$('#scrollBtn').onclick=toggleScroll;$('#metroBtn').onclick=toggleMetro;$('#wakeBtn').onclick=toggleWake;$('#fullBtn').onclick=async()=>{document.body.classList.toggle('stage-only');try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen()}catch{}};$('#lockBtn').onclick=()=>{locked=!locked;$('#app').classList.toggle('locked',locked);$('#lockBtn').textContent=locked?'🔐 Travado':'🔒 Travar';$('#lockBtn').classList.toggle('danger',locked)};
+$('#newBtn').onclick=()=>editSong();$('#cancelEdit').onclick=()=>setView('biblioteca');$('#songForm').onsubmit=e=>{e.preventDefault();const id=$('#songId').value,obj={id};['title','artist','key','bpm','meter','style','direction','chart','bass','director'].forEach(k=>obj[k]=$('#'+k+'Input').value.trim());obj.bpm=Math.max(30,Math.min(240,Number(obj.bpm)||72));const i=songs.findIndex(x=>x.id===id);if(i>=0)songs[i]=obj;else songs.push(obj);save('ws_songs',songs);$('#formStatus').textContent='Música salva localmente.';render();setView('biblioteca')};
+$('#songList').onclick=e=>{const b=e.target.closest('button[data-act]');if(!b)return;const i=Number(b.dataset.i),a=b.dataset.act;if(a==='play'){current=i;transpose=0;setView('cifra');scrollTo(0,0);render()}if(a==='edit')editSong(i);if(a==='del'&&confirm(`Excluir “${songs[i].title}”?`)){songs.splice(i,1);current=Math.min(current,Math.max(0,songs.length-1));save('ws_songs',songs);render()}if(a==='up'&&i>0){[songs[i-1],songs[i]]=[songs[i],songs[i-1]];save('ws_songs',songs);render()}if(a==='down'&&i<songs.length-1){[songs[i+1],songs[i]]=[songs[i],songs[i+1]];save('ws_songs',songs);render()}};
+$('#exportBtn').onclick=()=>{const blob=new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),songs},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='worship-stage-backup.json';a.click();URL.revokeObjectURL(a.href)};$('#importBtn').onclick=()=>$('#fileInput').click();$('#fileInput').onchange=async e=>{try{const data=JSON.parse(await e.target.files[0].text()),arr=Array.isArray(data)?data:data.songs;if(!Array.isArray(arr))throw Error();songs=arr.filter(x=>x&&x.title).map(x=>({id:x.id||crypto.randomUUID(),title:String(x.title),artist:String(x.artist||''),key:String(x.key||'C'),bpm:Number(x.bpm)||72,meter:String(x.meter||'4/4'),style:String(x.style||''),direction:String(x.direction||''),chart:String(x.chart||''),bass:String(x.bass||''),director:String(x.director||'')}));current=0;save('ws_songs',songs);render();$('#libraryStatus').textContent=`Importação concluída: ${songs.length} música(s).`}catch{$('#libraryStatus').textContent='Arquivo inválido. Use um backup JSON exportado pelo app.'}e.target.value=''};
+document.addEventListener('keydown',e=>{if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName))return;if(e.key==='ArrowRight')$('#nextBtn').click();if(e.key==='ArrowLeft')$('#prevBtn').click();if(e.key===' '){e.preventDefault();toggleScroll()}if(e.key==='m')toggleMetro();if(e.key==='+')$('#upBtn').click();if(e.key==='-')$('#downBtn').click()});document.addEventListener('visibilitychange',async()=>{if(document.visibilityState==='visible'&&wakeLock){try{wakeLock=await navigator.wakeLock.request('screen')}catch{}}});render();setView('cifra');
+})();
+</script>
+</body></html>
