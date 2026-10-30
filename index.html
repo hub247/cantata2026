@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StageLead - Cifras & Direção Musical</title>
-    <!-- Tailwind CSS CDN -->
+    <title>Setlist & Cifras - Culto</title>
+    <!-- Tailwind CSS para estilização rápida e moderna -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -12,620 +12,396 @@
             theme: {
                 extend: {
                     colors: {
-                        stageDark: '#0f172a',
-                        stageCard: '#1e293b',
-                        stageActive: '#3b82f6',
+                        darkbg: '#121212',
+                        cardbg: '#1e1e1e',
+                        accent: '#3b82f6'
                     }
                 }
             }
         }
     </script>
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .chord-font { font-family: 'JetBrains Mono', monospace; }
-        /* Custom scrollbar for dark stage view */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        .chord { color: #60a5fa; font-weight: bold; }
+        .section-title { color: #f43f5e; font-weight: bold; margin-top: 1rem; display: block; }
+        body { background-color: #121212; color: #e5e7eb; }
     </style>
 </head>
-<body class="bg-stageDark text-slate-100 min-h-screen flex flex-col select-none">
+<body class="min-h-screen flex flex-col justify-between select-none">
 
-    <!-- Top Navigation / Header -->
-    <header class="bg-slate-900 border-b border-slate-800 px-4 py-3 flex items-center justify-between shadow-md">
-        <div class="flex items-center space-x-3">
-            <div class="bg-blue-600 text-white p-2 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <i class="fa-solid fa-music text-lg"></i>
-            </div>
+    <!-- CABEÇALHO / DIREÇÃO MUSICAL -->
+    <header class="bg-cardbg border-b border-zinc-800 p-4 sticky top-0 z-50 shadow-md">
+        <div class="max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div>
-                <h1 class="font-bold text-lg tracking-wide text-white">StageLead</h1>
-                <p class="text-xs text-slate-400">Repertório de Culto & Baixo</p>
+                <h1 id="song-title" class="text-xl font-bold text-white text-center md:text-left">Carregando repertório...</h1>
+                <p id="song-meta" class="text-xs text-zinc-400 text-center md:text-left">Tom: C | BPM: 72</p>
             </div>
-        </div>
 
-        <!-- Metronome Visualizer & Controls -->
-        <div class="flex items-center space-x-4">
-            <div id="metronomeIndicator" class="hidden sm:flex items-center space-x-2 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
-                <div id="beatDot" class="w-3 h-3 rounded-full bg-slate-600 transition-all duration-100"></div>
-                <span id="bpmDisplay" class="text-xs font-mono font-bold text-slate-300">72 BPM</span>
-                <button onclick="toggleMetronome()" id="metronomeBtn" class="text-xs bg-slate-700 hover:bg-slate-600 px-2 py-0.5 rounded text-white transition">
-                    <i class="fa-solid fa-play"></i>
+            <!-- CONTROLES DE PALCO -->
+            <div class="flex flex-wrap items-center justify-center gap-2">
+                <!-- Metrônomo / BPM -->
+                <button onclick="toggleMetronome()" id="btn-metronome" class="bg-zinc-800 hover:bg-zinc-700 text-xs px-3 py-2 rounded-lg font-medium flex items-center gap-1 border border-zinc-700 transition">
+                    <span id="metronome-dot" class="w-2 h-2 rounded-full bg-zinc-500"></span>
+                    <span id="metronome-text">Metrônomo (Off)</span>
                 </button>
-            </div>
 
-            <button onclick="openSettings()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2.5 rounded-xl border border-slate-700 transition">
-                <i class="fa-solid fa-gear"></i>
-            </button>
+                <!-- Auto-rolagem -->
+                <button onclick="toggleAutoScroll()" id="btn-scroll" class="bg-zinc-800 hover:bg-zinc-700 text-xs px-3 py-2 rounded-lg font-medium border border-zinc-700 transition">
+                    ▶ Auto-Rolagem
+                </button>
+
+                <!-- Velocidade da rolagem -->
+                <select id="scroll-speed" onchange="changeScrollSpeed()" class="bg-zinc-800 text-xs px-2 py-2 rounded-lg border border-zinc-700 text-white outline-none">
+                    <option value="1">Velocidade 1x</option>
+                    <option value="2" selected>Velocidade 2x</option>
+                    <option value="3">Velocidade 3x</option>
+                    <option value="4">Velocidade 4x</option>
+                </select>
+            </div>
         </div>
     </header>
 
-    <!-- Main Workspace Layout -->
-    <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        
-        <!-- Sidebar: Setlist Queue (Collapsible on mobile via toggle) -->
-        <aside class="w-full lg:w-80 bg-slate-900/80 border-r border-slate-800 flex flex-col shrink-0">
-            <div class="p-4 border-b border-slate-800 flex items-center justify-between">
-                <h2 class="font-semibold text-sm uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                    <i class="fa-solid fa-list-check text-blue-500"></i> Setlist de Hoje
-                </h2>
-                <span id="songCountBadge" class="text-xs bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded-full font-mono">6 músicas</span>
-            </div>
-
-            <!-- Song Queue List -->
-            <div id="setlistContainer" class="flex-1 overflow-y-auto p-2 space-y-1.5">
-                <!-- Populated via JavaScript -->
-            </div>
-        </aside>
-
-        <!-- Center: Chord Chart & Stage Display -->
-        <section class="flex-1 flex flex-col bg-stageDark relative overflow-hidden">
-            
-            <!-- Floating Stage Controls (Auto-Scroll & Transpose) -->
-            <div class="absolute top-3 right-4 z-10 flex items-center space-x-2 bg-slate-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-700 shadow-xl">
-                <!-- Auto Scroll Speed -->
-                <div class="flex items-center space-x-1 px-2 border-r border-slate-700">
-                    <span class="text-xs text-slate-400 hidden sm:inline">Velocidade:</span>
-                    <button onclick="adjustScrollSpeed(-1)" class="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-bold text-slate-200">-</button>
-                    <span id="scrollSpeedDisplay" class="text-xs font-mono font-bold w-6 text-center text-blue-400">1</span>
-                    <button onclick="adjustScrollSpeed(1)" class="w-7 h-7 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-bold text-slate-200">+</button>
-                </div>
-
-                <!-- Play/Pause Auto-Scroll -->
-                <button onclick="toggleAutoScroll()" id="autoScrollBtn" class="flex items-center space-x-1.5 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-xl text-xs font-semibold shadow-md transition">
-                    <i id="scrollIcon" class="fa-solid fa-play"></i>
-                    <span id="scrollText">Auto-Rolagem</span>
-                </button>
-            </div>
-
-            <!-- Chart Content Area (Scrollable) -->
-            <div id="chartScrollArea" class="flex-1 overflow-y-auto p-4 sm:p-8 space-y-6 max-w-4xl mx-auto w-full pb-32">
-                <!-- Header Info -->
-                <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 shadow-lg flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <div class="flex items-center gap-2 mb-1">
-                            <span id="currentSongKey" class="text-xs font-mono bg-blue-500/20 text-blue-400 font-bold px-2.5 py-0.5 rounded-md border border-blue-500/30">Tom: C</span>
-                            <span id="currentSongBpm" class="text-xs font-mono bg-slate-800 text-slate-300 px-2 py-0.5 rounded-md">72 BPM</span>
-                        </div>
-                        <h2 id="currentSongTitle" class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Selecione uma música</h2>
-                        <p id="currentSongArtist" class="text-sm text-slate-400 font-medium">Artista / Ministério</p>
-                    </div>
-
-                    <!-- Quick Leader Note Trigger -->
-                    <button onclick="toggleLeaderNotes()" class="flex items-center justify-center space-x-2 bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 px-4 py-2.5 rounded-xl text-xs font-semibold transition">
-                        <i class="fa-solid fa-clipboard-user text-sm"></i>
-                        <span>Notas de Direção</span>
-                    </button>
-                </div>
-
-                <!-- Leader Notes Banner (Collapsible) -->
-                <div id="leaderNotesBox" class="hidden bg-amber-950/40 border border-amber-500/30 rounded-2xl p-4 text-amber-200/90 text-sm shadow-inner">
-                    <div class="flex items-center justify-between mb-1.5">
-                        <span class="font-bold flex items-center gap-2 text-amber-400">
-                            <i class="fa-solid fa-triangle-exclamation"></i> Alerta para a Banda & Líder:
-                        </span>
-                        <button onclick="toggleLeaderNotes()" class="text-amber-400 hover:text-amber-200 text-xs"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                    <p id="leaderNotesText">Sem observações para esta música.</p>
-                </div>
-
-                <!-- Cifra Renderizada -->
-                <div class="bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 sm:p-8 shadow-2xl">
-                    <pre id="chartBodyContent" class="chord-font text-base sm:text-lg leading-relaxed text-slate-200 whitespace-pre-wrap">Selecione uma música no setlist ao lado para carregar a cifra otimizada para o palco.</pre>
-                </div>
-            </div>
-
-            <!-- Bottom Navigation Bar for Setlist (Prev / Next) -->
-            <div class="absolute bottom-0 left-0 right-0 bg-slate-900/95 border-t border-slate-800 px-6 py-3 flex items-center justify-between backdrop-blur-md shadow-2xl">
-                <button onclick="navigateSong(-1)" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2 rounded-xl text-xs font-semibold transition border border-slate-700">
-                    <i class="fa-solid fa-arrow-left"></i>
-                    <span>Anterior</span>
-                </button>
-                <div id="currentSongPosition" class="text-xs font-mono text-slate-400">
-                    1 de 6
-                </div>
-                <button onclick="navigateSong(1)" class="flex items-center space-x-2 bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-xl text-xs font-semibold shadow-lg transition">
-                    <span>Próxima</span>
-                    <i class="fa-solid fa-arrow-right"></i>
-                </button>
-            </div>
-        </section>
-    </main>
-
-    <!-- Settings Modal -->
-    <div id="settingsModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-6">
-            <div class="flex items-center justify-between">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-blue-500"></i> Configurações do StageLead
-                </h3>
-                <button onclick="openSettings()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            
-            <div class="space-y-4 text-sm text-slate-300">
-                <div>
-                    <label class="block font-medium mb-1 text-slate-400">Ajustar BPM do Metrônomo</label>
-                    <div class="flex items-center space-x-3">
-                        <input type="range" id="bpmSlider" min="50" max="140" value="72" class="w-full accent-blue-600" oninput="updateBpmValue(this.value)">
-                        <span id="bpmSliderVal" class="font-mono font-bold text-blue-400 w-12 text-right">72</span>
-                    </div>
-                </div>
-
-                <div class="p-3 bg-slate-800/60 rounded-2xl border border-slate-700/60">
-                    <h4 class="font-semibold text-white mb-1 text-xs uppercase tracking-wider text-blue-400">Dica para Baixista & Diretor</h4>
-                    <p class="text-xs text-slate-400 leading-relaxed">
-                        Este app foi desenhado para uso em tablets ou celulares no pedestal. Use o botão <strong>Auto-Rolagem</strong> para deixar a mão livre enquanto toca o contrabaixo e comande a banda com as notas de direção de cada música.
-                    </p>
-                </div>
-            </div>
-
-            <div class="flex justify-end pt-2">
-                <button onclick="openSettings()" class="bg-blue-600 hover:bg-blue-500 text-white px-5 py-2.5 rounded-xl text-xs font-semibold transition shadow-lg">
-                    Salvar e Fechar
-                </button>
-            </div>
-        </div>
+    <!-- NOTAS DO LÍDER / DIREÇÃO MUSICAL -->
+    <div id="leader-notes-container" class="bg-amber-950/40 border-b border-amber-900/50 px-4 py-2 text-xs text-amber-200 text-center">
+        <strong>Nota de Direção:</strong> <span id="leader-note">Atenção na dinâmica da introdução.</span>
     </div>
 
-    <!-- JavaScript Application Logic -->
+    <!-- CORPO DA CIFRA -->
+    <main class="flex-1 max-w-3xl w-full mx-auto p-4 md:p-6">
+        <div id="chord-display" class="font-mono text-sm md:text-base leading-relaxed whitespace-pre-wrap bg-zinc-900/80 p-6 rounded-xl border border-zinc-800 shadow-inner">
+            <!-- A cifra vai injetada aqui via JavaScript -->
+        </div>
+    </main>
+
+    <!-- RODAPÉ / SETLIST (NAVEGAÇÃO ENTRE MÚSICAS) -->
+    <footer class="bg-cardbg border-t border-zinc-800 p-4 sticky bottom-0 z-50">
+        <div class="max-w-4xl mx-auto flex items-center justify-between gap-2">
+            <button onclick="prevSong()" class="bg-zinc-800 hover:bg-zinc-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                ◀ Anterior
+            </button>
+            <div id="setlist-indicator" class="text-xs font-semibold text-zinc-400">
+                Música 1 de 6
+            </div>
+            <button onclick="nextSong()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                Próxima ▶
+            </button>
+        </div>
+    </footer>
+
+    <!-- SCRIPT DE FUNCIONAMENTO DO APP -->
     <script>
-        // Setlist Data (Exact Cifra Club versions provided previously)
-        const setlistData = [
+        // BANCO DE DADOS DE CIFRAS DO CULTO
+        const playlist = [
             {
-                id: 1,
-                title: "Santo Pra Sempre",
-                artist: "Gabriel Guedes",
-                key: "C",
-                bpm: 72,
-                leaderNotes: "Banda inicia suave na intro (F9 Am7 G | Em7 Am7 G). Cuidado com a dinâmica no pré-refrão para o crescendo do refrão.",
-                chart: `(Intro) F9  Am7  G  /  Em7  Am7  G
+                title: "1. Santo Pra Sempre — Gabriel Guedes",
+                meta: "Tom: C | BPM: 72 | Estilo: Adoração",
+                note: "Manter o groove constante no baixo. Subir a dinâmica de intensidade a partir do segundo refrão.",
+                content: `(Intro) <span class="chord">F9</span>  <span class="chord">Am7</span>  <span class="chord">G</span>  /  <span class="chord">Em7</span>  <span class="chord">Am7</span>  <span class="chord">G</span>
 
-(Verso 1)
-C
+<span class="section-title">(Verso 1)</span>
+<span class="chord">C</span>
 As muitas gerações rendidas em louvor
-Am7          G    F9
+<span class="chord">Am7</span>          <span class="chord">G</span>    <span class="chord">F9</span>
 Cantando ao Cordeiro uma canção
-C
+<span class="chord">C</span>
 Os que em Ti se foram e os que hão de crer
-Am7          G    F9
+<span class="chord">Am7</span>          <span class="chord">G</span>    <span class="chord">F9</span>
 Cantando ao Cordeiro uma canção
 
-(Pré-Refrão)
-F9          Am7
+<span class="section-title">(Pré-Refrão)</span>
+<span class="chord">F9</span>          <span class="chord">Am7</span>
 Teu nome é o mais alto
-G
+<span class="chord">G</span>
 Teu nome é o maior
-Am7         F9
+<span class="chord">Am7</span>         <span class="chord">F9</span>
 Teu nome é sobre todos
-F9         Am7
+<span class="chord">F9</span>         <span class="chord">Am7</span>
 Os tronos e domínios
-G
+<span class="chord">G</span>
 Governos e poderes
-Am7         Dm7
+<span class="chord">Am7</span>         <span class="chord">Dm7</span>
 Teu nome é sobre todos
 
-(Refrão)
-F9         Am7    G
+<span class="section-title">(Refrão)</span>
+<span class="chord">F9</span>         <span class="chord">Am7</span>    <span class="chord">G</span>
 E os anjos clamam: Santo
-Em7        Am7
+<span class="chord">Em7</span>        <span class="chord">Am7</span>
 Toda criação: Santo
-Dm7        G
+<span class="chord">Dm7</span>        <span class="chord">G</span>
 Exaltado És, Santo
-C
-Santo pra sempre
-
-(Final / Variações)
-F9         Am7    G
-O Teu povo canta: Santo
-Em7        Am7
-Sim, ao Rei dos Reis, Santo
-Dm7        G
-Tu sempre serás Santo
-C
+<span class="chord">C</span>
 Santo pra sempre`
             },
             {
-                id: 2,
-                title: "Maravilhado",
-                artist: "Nívea Soares",
-                key: "G",
-                bpm: 68,
-                leaderNotes: "Baixo faz notas longas e sustentadas nos versos. Entrar com groove mais encorpado a partir do refrão.",
-                chart: `(Intro) G  Bm7  Em7  C9
+                title: "2. Maravilhado — Nívea Soares",
+                meta: "Tom: G | BPM: 68 | Estilo: Adoração Contemplativa",
+                note: "Baixo bem limpo e notas longas nos versos. Entrar com peso sutil na ponte.",
+                content: `(Intro) <span class="chord">G</span>  <span class="chord">Bm7</span>  <span class="chord">Em7</span>  <span class="chord">C9</span>
 
-(Verso)
-Em7         C9
+<span class="section-title">(Verso)</span>
+<span class="chord">Em7</span>         <span class="chord">C9</span>
 Tu reinas no trono dos céus
-G           D4
+<span class="chord">G</span>           <span class="chord">D4</span>
 A criação se prostra aos Teus pés
-Em7         C9
+<span class="chord">Em7</span>         <span class="chord">C9</span>
 Tu reinas vestido de glória
-G           D4
+<span class="chord">G</span>           <span class="chord">D4</span>
 Os anjos Te adoram aos Teus pés
 
-(Pré-Refrão)
-Em7         C9
+<span class="section-title">(Pré-Refrão)</span>
+<span class="chord">Em7</span>         <span class="chord">C9</span>
 Pra sempre governarás
-G/B         C9
+<span class="chord">G/B</span>         <span class="chord">C9</span>
 Teu reino não passará
 
-(Refrão)
-G           D/F#
+<span class="section-title">(Refrão)</span>
+<span class="chord">G</span>           <span class="chord">D/F#</span>
 Oh Santo Deus, fico maravilhado
-Em7
+<span class="chord">Em7</span>
 Tu és muito mais
-C9
+<span class="chord">C9</span>
 Do que eu possa expressar
-G
+<span class="chord">G</span>
 Oh Santo Deus
-D/F#
+<span class="chord">D/F#</span>
 Quebro o vaso de alabastro
-Em7
+<span class="chord">Em7</span>
 Sobre o Deus que sabe me
-C9
-Maravilhar
-
-(Ponte)
-G           D/F#  Em7  C9  G
-Derramo o meu louvor sobre Ti
-G           D/F#  Em7  C9  G
-Derramo o meu amor sobre Ti`
+<span class="chord">C9</span>
+Maravilhar`
             },
             {
-                id: 3,
-                title: "Ele é Exaltado",
-                artist: "Adhemar de Campos",
-                key: "G",
-                bpm: 80,
-                leaderNotes: "Música clássica de transição congregacional. Manter o andamento firme e marcar bem as passagens no baixo.",
-                chart: `(Intro) G  G/B  C9  D/F#
+                title: "3. Ele é Exaltado — Adhemar de Campos",
+                meta: "Tom: G | BPM: 80 | Estilo: Clássico Congregacional",
+                note: "Ritmo alegre e marcado. Atenção redobrada na passagem de acordes da ponte.",
+                content: `(Intro) <span class="chord">G</span>  <span class="chord">G/B</span>  <span class="chord">C9</span>  <span class="chord">D/F#</span>
 
-(Verso)
-G
+<span class="section-title">(Verso)</span>
+<span class="chord">G</span>
 Ele é exaltado
-G/B        C9
+<span class="chord">G/B</span>        <span class="chord">C9</span>
 O rei é exaltado nos céus
-C/E        D/F#
+<span class="chord">C/E</span>        <span class="chord">D/F#</span>
 Eu o louvarei
-G
+<span class="chord">G</span>
 Ele é exaltado
-G/B
+<span class="chord">G/B</span>
 Pra sempre exaltado
-C    D    C/E  D/F#
+<span class="chord">C</span>    <span class="chord">D</span>    <span class="chord">C/E</span>  <span class="chord">D/F#</span>
 O seu nome louva__rei
 
-(Refrão)
-Am7        Am7/G    D
+<span class="section-title">(Refrão)</span>
+<span class="chord">Am7</span>        <span class="chord">Am7/G</span>    <span class="chord">D</span>
 Ele é o Senhor
-G    G/B    C    G/B
+<span class="chord">G</span>    <span class="chord">G/B</span>    <span class="chord">C</span>    <span class="chord">G/B</span>
 Sua verdade vai sempre reinar
-Am7        Am7/G    D/F#  C/E  D
+<span class="chord">Am7</span>        <span class="chord">Am7/G</span>    <span class="chord">D/F#</span>  <span class="chord">C/E</span>  <span class="chord">D</span>
 Terra e céus
-G    G/F    E4  E7
+<span class="chord">G</span>    <span class="chord">G/F</span>    <span class="chord">E4</span>  <span class="chord">E7</span>
 Glorificam seu santo nome
-Am7        Am/G
+<span class="chord">Am7</span>        <span class="chord">Am/G</span>
 Ele é exaltado
-F    D    G    E4  E/G#
+<span class="chord">F</span>    <span class="chord">D</span>    <span class="chord">G</span>    <span class="chord">E4</span>  <span class="chord">E/G#</span>
 O rei é exaltado nos céus`
             },
             {
-                id: 4,
-                title: "Maranata",
-                artist: "Ministério Avivah",
-                key: "D",
-                bpm: 76,
-                leaderNotes: "Atenção na virada do pré-refrão. O baixo guia a dinâmica da ponte com clareza rítmica.",
-                chart: `(Intro) Bm7  G2  D  A4
+                title: "4. Maranata — Ministério Avivah",
+                meta: "Tom: D | BPM: 76 | Estilo: Celebração / Esperança",
+                note: "Manter a levada firme no refrão para embalar a congregação.",
+                content: `(Intro) <span class="chord">Bm7</span>  <span class="chord">G2</span>  <span class="chord">D</span>  <span class="chord">A4</span>
 
-(Verso)
-Bm7         G2
+<span class="section-title">(Verso)</span>
+<span class="chord">Bm7</span>         <span class="chord">G2</span>
 Tu és a minha luz, a minha salvação
-C           A4
+<span class="chord">C</span>           <span class="chord">A4</span>
 E a Ti me renderei
-Bm7         G2
+<span class="chord">Bm7</span>         <span class="chord">G2</span>
 Se ao Teu lado estou, seguro em Tuas mãos
-D           A4
+<span class="chord">D</span>           <span class="chord">A4</span>
 Eu nada temerei
 
-(Pré-Refrão)
-G2    A4    Bm7    C    A4
+<span class="section-title">(Pré-Refrão)</span>
+<span class="chord">G2</span>    <span class="chord">A4</span>    <span class="chord">Bm7</span>    <span class="chord">C</span>    <span class="chord">A4</span>
 Oh oh oh, Tu és santo, ó Senhor
-G2    A4    Bm7    D    A11
+<span class="chord">G2</span>    <span class="chord">A4</span>    <span class="chord">Bm7</span>    <span class="chord">D</span>    <span class="chord">A11</span>
 Oh oh oh, Tu és digno de louvor
 
-(Refrão)
-G2    D     Bm7
+<span class="section-title">(Refrão)</span>
+<span class="chord">G2</span>    <span class="chord">D</span>     <span class="chord">Bm7</span>
 Só em Ti confiarei, eu nada temerei
-A4          Em frente eu irei, pois eu sei que vivo estás
-D           E um dia voltarás, do céu pra nos buscar
-Bm7         Para sempre reinarás, aleluia!
-
-(Ponte / Clímax)
-D
-Vem, Jesus
-G2
-Vem, Jesus
-D           A4
-Maranata, ora vem, Senhor Jesus`
+<span class="chord">A4</span>          Em frente eu irei, pois eu sei que vivo estás
+<span class="chord">D</span>           E um dia voltarás, do céu pra nos buscar
+<span class="chord">Bm7</span>         Para sempre reinarás, aleluia!`
             },
             {
-                id: 5,
-                title: "Medley: Teu Reino + Pai Nosso",
-                artist: "Nívea Soares / Ibab Celebração",
-                key: "D",
-                bpm: 74,
-                leaderNotes: "Medley fluído. Na virada para o 'Pai Nosso', manter a mesma atmosfera de adoração congregacional sem pausa brusca.",
-                chart: `--------------------------------------------------
-PARTE 1: Teu Reino (Nívea Soares)
---------------------------------------------------
-(Intro) D  A/C#  Bm7  G
+                title: "5. Medley: Teu Reino + Pai Nosso",
+                meta: "Tom: D | BPM: 70 | Estilo: Oração / Transição suave",
+                note: "Medley fluido. Fazer a transição de Teu Reino para o Pai Nosso sem quebrar o andamento.",
+                content: `<span class="section-title">--- PARTE 1: Teu Reino (Nívea Soares) ---</span>
+(Intro) <span class="chord">D</span>  <span class="chord">A/C#</span>  <span class="chord">Bm7</span>  <span class="chord">G</span>
 
-(Verso)
-D                   A/C#
+<span class="chord">D</span>                   <span class="chord">A/C#</span>
 O Teu reino venha sobre nós
-Bm7                   G
+<span class="chord">Bm7</span>                   <span class="chord">G</span>
 A Tua vontade reine em nosso coração
-D                   A/C#
+<span class="chord">D</span>                   <span class="chord">A/C#</span>
 Tua luz brilha nas trevas
-Bm7                   G
+<span class="chord">Bm7</span>                   <span class="chord">G</span>
 E não há barreiras para o Teu amor
 
-(Refrão)
-D               A/C#
+<span class="section-title">(Refrão)</span>
+<span class="chord">D</span>               <span class="chord">A/C#</span>
 Venha o Teu reino, Senhor
-Bm7             G
+<span class="chord">Bm7</span>             <span class="chord">G</span>
 Manifesta a Tua glória aqui
-D               A/C#
+<span class="chord">D</span>               <span class="chord">A/C#</span>
 Tua é a glória, Teu é o poder
-Bm7             G
-Para sempre, amém
+<span class="chord">Bm7</span>             <span class="chord">G</span>
 
---------------------------------------------------
-PARTE 2: Pai Nosso - Refrão (Ibab Celebração)
---------------------------------------------------
-(Refrão)
-D               A/C#
+<span class="section-title">--- PARTE 2: Pai Nosso (Ibab Celebração) ---</span>
+<span class="chord">D</span>               <span class="chord">A/C#</span>
 Pai nosso, que estás nos céus
-Bm7             G
+<span class="chord">Bm7</span>             <span class="chord">G</span>
 Santificado seja o Teu nome
-D               A/C#
+<span class="chord">D</span>               <span class="chord">A/C#</span>
 Venha o Teu reino, seja feita a Tua vontade
-Bm7             G                 D
+<span class="chord">Bm7</span>             <span class="chord">G</span>                 <span class="chord">D</span>
 Assim na terra como no céu`
             },
             {
-                id: 6,
-                title: "Jesus é o Rei da Glória",
-                artist: "Daniel Souza",
-                key: "G -> A",
-                bpm: 92,
-                leaderNotes: "⚠️ ATENÇÃO DIRETOR: Ocorrerá modulação de G para A no último refrão! Avisar a banda com antecedência na transição.",
-                chart: `(Intro) G  C  D  G
+                title: "6. Jesus é o Rei da Glória — Daniel Souza",
+                meta: "Tom: G ➔ A | BPM: 84 | Estilo: Celebração com Modulação",
+                note: "ATENÇÃO À MODULAÇÃO: O segundo refrão sobe para A Maior. Prepare a banda para a virada!",
+                content: `(Intro) <span class="chord">G</span>  <span class="chord">C</span>  <span class="chord">D</span>  <span class="chord">G</span>
 
-(Verso - Tom: G)
-G               C
+<span class="section-title">(Verso - Tom: G)</span>
+<span class="chord">G</span>               <span class="chord">C</span>
 Jesus é o Rei da glória
-D               G
+<span class="chord">D</span>               <span class="chord">G</span>
 Senhor dos senhores, Deus de amor
-G               C
+<span class="chord">G</span>               <span class="chord">C</span>
 Sua presença é real neste lugar
-D               G
-Vamos adorar ao Salvador
+<span class="chord">D</span>               <span class="chord">G</span>
 
-(Pré-Refrão)
-Am7             G/B
-Toda língua confessará
-C               D
-Que Ele é o Senhor
-
-(Refrão - Tom: G)
-G               C
+<span class="section-title">(Refrão - Tom: G)</span>
+<span class="chord">G</span>               <span class="chord">C</span>
 Glória, glória, ao Cordeiro
-D               G
+<span class="chord">D</span>               <span class="chord">G</span>
 Glória, glória, ao Rei dos reis
-G               C
+<span class="chord">G</span>               <span class="chord">C</span>
 Glória, glória, pois Ele é digno
-D               G
-De todo o nosso louvor
+<span class="chord">D</span>               <span class="chord">G</span>
 
---------------------------------------------------
-MODULAÇÃO PARA A MAIOR (Atenção!)
---------------------------------------------------
+<span class="section-title">=== MODULAÇÃO PARA A MAIOR ===</span>
 
-(Refrão Final - Tom: A)
-A               D
+<span class="section-title">(Refrão Final - Tom: A)</span>
+<span class="chord">A</span>               <span class="chord">D</span>
 Glória, glória, ao Cordeiro
-E               A
+<span class="chord">E</span>               <span class="chord">A</span>
 Glória, glória, ao Rei dos reis
-A               D
+<span class="chord">A</span>               <span class="chord">D</span>
 Glória, glória, pois Ele é digno
-E               A
+<span class="chord">E</span>               <span class="chord">A</span>
 De todo o nosso louvor`
             }
         ];
 
         let currentIndex = 0;
-        let isAutoScrolling = false;
-        let scrollSpeed = 1;
+        let isScrolling = false;
         let scrollInterval = null;
-        let metronomeActive = false;
-        let metronomeTimer = null;
-        let currentBpm = 72;
+        let isMetronomeActive = false;
+        let metronomeInterval = null;
 
-        // Initialize App on Load
-        window.onload = function() {
-            renderSetlist();
-            loadSong(0);
-        };
-
-        // Render Setlist Sidebar
-        function renderSetlist() {
-            const container = document.getElementById('setlistContainer');
-            container.innerHTML = '';
-
-            setlistData.forEach((song, idx) => {
-                const isActive = idx === currentIndex;
-                const item = document.createElement('div');
-                item.className = `p-3 rounded-xl cursor-pointer transition flex items-center justify-between border ${
-                    isActive 
-                        ? 'bg-blue-600/20 border-blue-500/50 text-white shadow-md' 
-                        : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800 hover:border-slate-600'
-                }`;
-                item.innerHTML = `
-                    <div class="flex items-center space-x-3 truncate">
-                        <span class="text-xs font-mono font-bold ${isActive ? 'text-blue-400' : 'text-slate-500'}">0${idx+1}</span>
-                        <div class="truncate">
-                            <h4 class="text-xs font-bold truncate">${song.title}</h4>
-                            <p class="text-[10px] text-slate-400 truncate">${song.artist}</p>
-                        </div>
-                    </div>
-                    <span class="text-[10px] font-mono px-2 py-0.5 rounded ${isActive ? 'bg-blue-500 text-white font-bold' : 'bg-slate-700 text-slate-300'}">
-                        ${song.key}
-                    </span>
-                `;
-                item.onclick = () => loadSong(idx);
-                container.appendChild(item);
-            });
-
-            document.getElementById('songCountBadge').innerText = `${setlistData.length} músicas`;
-        }
-
-        // Load Specific Song into Main View
+        // CARREGAR MÚSCUA NA TELA
         function loadSong(index) {
+            if (index < 0 || index >= playlist.length) return;
             currentIndex = index;
-            const song = setlistData[currentIndex];
+            const song = playlist[currentIndex];
 
-            document.getElementById('currentSongTitle').innerText = song.title;
-            document.getElementById('currentSongArtist').innerText = song.artist;
-            document.getElementById('currentSongKey').innerText = `Tom: ${song.key}`;
-            document.getElementById('currentSongBpm').innerText = `${song.bpm} BPM`;
-            document.getElementById('chartBodyContent').innerText = song.chart;
-            document.getElementById('leaderNotesText').innerText = song.leaderNotes;
-            document.getElementById('currentSongPosition').innerText = `${currentIndex + 1} de ${setlistData.length}`;
+            document.getElementById('song-title').innerText = song.title;
+            document.getElementById('song-meta').innerText = song.meta;
+            document.getElementById('leader-note').innerText = song.note;
+            document.getElementById('chord-display').innerHTML = song.content;
+            document.getElementById('setlist-indicator').innerText = `Música ${currentIndex + 1} de ${playlist.length}`;
 
-            // Update BPM on metronome
-            currentBpm = song.bpm;
-            document.getElementById('bpmDisplay').innerText = `${currentBpm} BPM`;
-            document.getElementById('bpmSlider').value = currentBpm;
-            document.getElementById('bpmSliderVal').innerText = currentBpm;
-
-            // Reset Scroll
-            document.getElementById('chartScrollArea').scrollTop = 0;
-            if (isAutoScrolling) toggleAutoScroll();
-
-            renderSetlist();
+            // Reseta o scroll ao trocar de música
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (isScrolling) toggleAutoScroll(); // Para o scroll ao trocar
         }
 
-        // Navigate via Next/Prev Buttons
-        function navigateSong(direction) {
-            let newIndex = currentIndex + direction;
-            if (newIndex >= 0 && newIndex < setlistData.length) {
-                loadSong(newIndex);
+        function nextSong() {
+            if (currentIndex < playlist.length - 1) {
+                loadSong(currentIndex + 1);
             }
         }
 
-        // Auto Scroll Logic
+        function prevSong() {
+            if (currentIndex > 0) {
+                loadSong(currentIndex - 1);
+            }
+        }
+
+        // AUTO-ROLAGEM INTELIGENTE
         function toggleAutoScroll() {
-            isAutoScrolling = !isAutoScrolling;
-            const btn = document.getElementById('autoScrollBtn');
-            const icon = document.getElementById('scrollIcon');
-            const text = document.getElementById('scrollText');
-            const scrollArea = document.getElementById('chartScrollArea');
+            const btn = document.getElementById('btn-scroll');
+            isScrolling = !isScrolling;
 
-            if (isAutoScrolling) {
-                btn.className = "flex items-center space-x-1.5 bg-amber-600 hover:bg-amber-500 text-white px-3 py-1.5 rounded-xl text-xs font-semibold shadow-md transition";
-                icon.className = "fa-solid fa-pause";
-                text.innerText = "Pausar";
-
+            if (isScrolling) {
+                btn.classList.add('bg-blue-600', 'border-blue-500');
+                btn.innerText = '⏸ Pausar Rolagem';
+                let speedMultiplier = parseInt(document.getElementById('scroll-speed').value) || 2;
+                
                 scrollInterval = setInterval(() => {
-                    scrollArea.scrollTop += scrollSpeed;
-                    // Auto stop at bottom
-                    if (scrollArea.scrollTop + scrollArea.clientHeight >= scrollArea.scrollHeight - 10) {
+                    window.scrollBy(0, speedMultiplier);
+                    // Se chegou ao fim da página, para automaticamente
+                    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 10) {
                         toggleAutoScroll();
                     }
-                }, 40);
+                }, 50);
             } else {
-                btn.className = "flex items-center space-x-1.5 bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-xl text-xs font-semibold shadow-md transition";
-                icon.className = "fa-solid fa-play";
-                text.innerText = "Auto-Rolagem";
+                btn.classList.remove('bg-blue-600', 'border-blue-500');
+                btn.innerText = '▶ Auto-Rolagem';
                 clearInterval(scrollInterval);
             }
         }
 
-        function adjustScrollSpeed(amount) {
-            scrollSpeed = Math.max(1, Math.min(5, scrollSpeed + amount));
-            document.getElementById('scrollSpeedDisplay').innerText = scrollSpeed;
+        function changeScrollSpeed() {
+            if (isScrolling) {
+                clearInterval(scrollInterval);
+                let speedMultiplier = parseInt(document.getElementById('scroll-speed').value) || 2;
+                scrollInterval = setInterval(() => {
+                    window.scrollBy(0, speedMultiplier);
+                }, 50);
+            }
         }
 
-        // Leader Notes Toggle
-        function toggleLeaderNotes() {
-            const box = document.getElementById('leaderNotesBox');
-            box.classList.toggle('hidden');
-        }
-
-        // Visual Metronome
+        // METRÔNOMO VISUAL SILENCIOSO
         function toggleMetronome() {
-            metronomeActive = !metronomeActive;
-            const btn = document.getElementById('metronomeBtn');
-            const dot = document.getElementById('beatDot');
+            const btn = document.getElementById('btn-metronome');
+            const dot = document.getElementById('metronome-dot');
+            const text = document.getElementById('metronome-text');
+            isMetronomeActive = !isMetronomeActive;
 
-            if (metronomeActive) {
-                btn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-                btn.className = "text-xs bg-red-600 hover:bg-red-500 px-2 py-0.5 rounded text-white transition";
-                
-                const intervalMs = (60 / currentBpm) * 1000;
-                metronomeTimer = setInterval(() => {
-                    dot.className = "w-3 h-3 rounded-full bg-blue-500 shadow-lg shadow-blue-500/50 scale-125 transition-all duration-75";
-                    setTimeout(() => {
-                        dot.className = "w-3 h-3 rounded-full bg-slate-600 transition-all duration-75";
-                    }, 150);
-                }, intervalMs);
+            if (isMetronomeActive) {
+                btn.classList.add('border-blue-500', 'bg-zinc-800');
+                text.innerText = 'Metrônomo (On)';
+                // Pisca a cada 800ms (~75 BPM)
+                metronomeInterval = setInterval(() => {
+                    dot.classList.toggle('bg-blue-500');
+                    dot.classList.toggle('bg-zinc-500');
+                }, 800);
             } else {
-                btn.innerHTML = '<i class="fa-solid fa-play"></i>';
-                btn.className = "text-xs bg-slate-700 hover:bg-slate-600 px-2 py-0.5 rounded text-white transition";
-                dot.className = "w-3 h-3 rounded-full bg-slate-600 transition-all duration-100";
-                clearInterval(metronomeTimer);
+                btn.classList.remove('border-blue-500');
+                text.innerText = 'Metrônomo (Off)';
+                dot.classList.remove('bg-blue-500');
+                dot.classList.add('bg-zinc-500');
+                clearInterval(metronomeInterval);
             }
         }
 
-        function updateBpmValue(val) {
-            currentBpm = parseInt(val);
-            document.getElementById('bpmSliderVal').innerText = currentBpm;
-            document.getElementById('bpmDisplay').innerText = `${currentBpm} BPM`;
-            if (metronomeActive) {
-                toggleMetronome();
-                toggleMetronome();
-            }
-        }
-
-        // Settings Modal Toggle
-        function openSettings() {
-            const modal = document.getElementById('settingsModal');
-            modal.classList.toggle('hidden');
-        }
+        // Inicializa a primeira música ao carregar a página
+        window.onload = () => {
+            loadSong(0);
+        };
     </script>
 </body>
 </html>
