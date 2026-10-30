@@ -163,7 +163,8 @@
             border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 20px;
-            flex: 1;
+            height: 60vh;
+            overflow-y: auto;
             box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2);
             position: relative;
         }
@@ -291,9 +292,6 @@
             box-shadow: 0 0 12px var(--accent-pink);
         }
 
-        .locked-mode pointer-events: none !important;
-
-        /* Utilitário para esconder */
         .hidden { display: none !important; }
     </style>
 </head>
@@ -309,16 +307,16 @@
 
             <div class="controls-bar" role="toolbar" aria-label="Controles principais de palco">
                 <!-- Metrônomo -->
-                <button onclick="toggleMetronome()" id="btn-metronome" class="btn-icon" aria-label="Ligar ou desligar metrônomo">
+                <button type="button" onclick="toggleMetronome()" id="btn-metronome" class="btn-icon" aria-label="Ligar ou desligar metrônomo">
                     <span id="metronome-dot" class="metronome-indicator"></span>
                     <span id="metronome-label">Metrônomo</span>
                 </button>
 
                 <!-- Controles de Transposição -->
                 <div style="display: flex; align-items: center; gap: 4px;" aria-label="Controles de transposição">
-                    <button onclick="transpose(-1)" aria-label="Baixar um semitom">-</button>
+                    <button type="button" onclick="transpose(-1)" aria-label="Baixar um semitom">-</button>
                     <span id="display-key" style="font-weight: bold; min-width: 30px; text-align: center;">C</span>
-                    <button onclick="transpose(1)" aria-label="Subir um semitom">+</button>
+                    <button type="button" onclick="transpose(1)" aria-label="Subir um semitom">+</button>
                 </div>
 
                 <!-- Modos de Visualização de Conteúdo -->
@@ -335,9 +333,9 @@
                 </select>
 
                 <!-- Botões de Ação Geral -->
-                <button onclick="openLibraryModal()" class="btn-icon">Biblioteca</button>
-                <button onclick="toggleStageMode()" id="btn-stage-mode" class="btn-icon">Modo Palco</button>
-                <button onclick="toggleLock()" id="btn-lock" class="btn-icon" aria-label="Travar controles">🔒 Travar</button>
+                <button type="button" onclick="openLibraryModal()" class="btn-icon">Biblioteca</button>
+                <button type="button" onclick="toggleStageMode()" id="btn-stage-mode" class="btn-icon">Modo Palco</button>
+                <button type="button" onclick="toggleLock()" id="btn-lock" class="btn-icon" aria-label="Travar controles">🔒 Travar</button>
             </div>
         </div>
     </header>
@@ -353,22 +351,22 @@
         <div style="display: flex; justify-content: space-between; align-items: center; background: var(--bg-card); padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 0.85rem;">
             <div style="display: flex; gap: 8px; align-items: center;">
                 <span>BPM:</span>
-                <button onclick="adjustBpm(-4)">-4</button>
-                <button onclick="adjustBpm(-1)">-1</button>
+                <button type="button" onclick="adjustBpm(-4)">-4</button>
+                <button type="button" onclick="adjustBpm(-1)">-1</button>
                 <strong id="display-bpm">72</strong>
-                <button onclick="adjustBpm(1)">+1</button>
-                <button onclick="adjustBpm(4)">+4</button>
-                <button onclick="saveTempBpm()" class="badge" style="cursor:pointer; border:none;">Salvar BPM</button>
+                <button type="button" onclick="adjustBpm(1)">+1</button>
+                <button type="button" onclick="adjustBpm(4)">+4</button>
+                <button type="button" onclick="saveTempBpm()" class="badge" style="cursor:pointer; border:none;">Salvar BPM</button>
             </div>
 
             <div id="scroll-page-controls" style="display: flex; gap: 8px; align-items: center;">
-                <button onclick="toggleAutoPlay()" id="btn-autoplay" class="btn-primary">▶ Iniciar Auto</button>
+                <button type="button" onclick="toggleAutoPlay()" id="btn-autoplay" class="btn-primary">▶ Iniciar Auto</button>
                 <span id="page-indicator" class="hidden">Página 1/1</span>
             </div>
         </div>
 
-        <!-- Container visualizador -->
-        <div class="stage-view-container">
+        <!-- Container visualizador com rolagem própria -->
+        <div class="stage-view-container" id="stage-container">
             <div id="content-display" class="chord-text" tabindex="0" aria-live="polite">
                 Carregando cifras...
             </div>
@@ -378,11 +376,11 @@
     <!-- RODAPÉ DE SETLIST -->
     <footer>
         <div class="footer-content">
-            <button onclick="prevSong()" class="btn-icon">◀ Anterior</button>
+            <button type="button" onclick="prevSong()" class="btn-icon">◀ Anterior</button>
             <div id="footer-setlist-info" style="font-size: 0.9rem; text-align: center; color: var(--text-muted);">
                 Música 1 de 6 — Próxima: Nenhuma
             </div>
-            <button onclick="nextSong()" class="btn-icon btn-primary">Próxima ▶</button>
+            <button type="button" onclick="nextSong()" class="btn-icon btn-primary">Próxima ▶</button>
         </div>
     </footer>
 
@@ -391,13 +389,13 @@
         <div class="modal-card">
             <div class="modal-header">
                 <h2 id="lib-title" style="font-size: 1.1rem;">Biblioteca e Setlist</h2>
-                <button onclick="closeLibraryModal()">✕</button>
+                <button type="button" onclick="closeLibraryModal()">✕</button>
             </div>
             <div class="modal-body">
                 <div style="display: flex; gap: 8px;">
                     <input type="text" id="lib-search" placeholder="Buscar música ou artista..." oninput="renderLibraryList()" style="flex: 1;">
-                    <button onclick="openEditorModal(null)" class="btn-primary">+ Nova Música</button>
-                    <button onclick="exportData()">Exportar JSON</button>
+                    <button type="button" onclick="openEditorModal(null)" class="btn-primary">+ Nova Música</button>
+                    <button type="button" onclick="exportData()">Exportar JSON</button>
                     <label class="btn-icon" style="cursor: pointer; display: inline-flex; align-items: center;">
                         Importar JSON <input type="file" id="import-file" accept=".json" onchange="importData(event)" class="hidden">
                     </label>
@@ -407,7 +405,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button onclick="closeLibraryModal()" class="btn-primary">Fechar</button>
+                <button type="button" onclick="closeLibraryModal()" class="btn-primary">Fechar</button>
             </div>
         </div>
     </div>
@@ -417,7 +415,7 @@
         <div class="modal-card" style="max-width: 800px;">
             <div class="modal-header">
                 <h2 id="editor-title" style="font-size: 1.1rem;">Editor de Música</h2>
-                <button onclick="closeEditorModal()">✕</button>
+                <button type="button" onclick="closeEditorModal()">✕</button>
             </div>
             <div class="modal-body">
                 <input type="hidden" id="edit-id">
@@ -467,15 +465,14 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button onclick="closeEditorModal()">Cancelar</button>
-                <button onclick="saveMusicFromEditor()" class="btn-primary">Salvar Música</button>
+                <button type="button" onclick="closeEditorModal()">Cancelar</button>
+                <button type="button" onclick="saveMusicFromEditor()" class="btn-primary">Salvar Música</button>
             </div>
         </div>
     </div>
 
-    <!-- SCRIPT DA APLICAÇÃO -->
+    <!-- SCRIPT DA APLICAÇÃO CORRIGIDO E ROBUSTO -->
     <script>
-        // Playlist original convertida e incorporada
         const initialPlaylist = [
             {
                 id: "santo-pra-sempre",
@@ -569,13 +566,12 @@
             }
         ];
 
-        // Estado Global da Aplicação
         let state = {
             library: [],
             setlist: [],
             currentIndex: 0,
-            viewMode: "chord", // chord, bass, direction
-            navMode: "scroll", // scroll, pages
+            viewMode: "chord",
+            navMode: "scroll",
             transposition: 0,
             tempBpm: 72,
             isLocked: false,
@@ -588,10 +584,9 @@
         let metronomeTimer = null;
         let audioCtx = null;
 
-        // Inicialização
         function initApp() {
             loadFromLocalStorage();
-            if (state.library.length === 0) {
+            if (!state.library || state.library.length === 0) {
                 state.library = JSON.parse(JSON.stringify(initialPlaylist));
                 state.setlist = state.library.map(m => m.id);
                 saveToLocalStorage();
@@ -599,7 +594,6 @@
             renderCurrentSong();
         }
 
-        // Persistência LocalSegura
         function saveToLocalStorage() {
             try {
                 localStorage.setItem('worship_stage_lib', JSON.stringify(state.library));
@@ -623,9 +617,9 @@
             }
         }
 
-        // Renderização da Música Atual
         function getCurrentSong() {
-            if (state.setlist.length === 0) return null;
+            if (!state.setlist || state.setlist.length === 0) return null;
+            if (state.currentIndex >= state.setlist.length) state.currentIndex = 0;
             const songId = state.setlist[state.currentIndex];
             return state.library.find(m => m.id === songId) || state.library[0];
         }
@@ -646,11 +640,10 @@
 
             state.tempBpm = song.bpm || 72;
             document.getElementById('display-bpm').innerText = state.tempBpm;
-            document.getElementById('display-key').innerText = song.currentKey || song.originalKey;
-            document.getElementById('header-meta').innerText = `Tom: ${song.currentKey || song.originalKey} | BPM: ${state.tempBpm} | Próxima: ${nextName}`;
+            document.getElementById('display-key').innerText = song.currentKey || song.originalKey || "C";
+            document.getElementById('header-meta').innerText = `Tom: ${song.currentKey || song.originalKey || "C"} | BPM: ${state.tempBpm} | Próxima: ${nextName}`;
             document.getElementById('banner-note').innerText = song.directionNote || "Sem observações específicas.";
 
-            // Renderizar conteúdo de acordo com o modo
             let rawContent = "";
             if (state.viewMode === "bass") {
                 rawContent = song.bassChart || song.chart;
@@ -673,12 +666,12 @@
             const lines = text.split('\n');
             return lines.map(line => {
                 let trimmed = line.trim();
-                if (trimmed.startsWith('(') && trimmed.endsWith(')')) {
-                    return `<span class="section-title">${escapeHtml(trimmed)}</span>`;
+                if ((trimmed.startsWith('(') && trimmed.endsWith(')')) || trimmed.startsWith('---') || trimmed.includes(':')) {
+                    if (trimmed.startsWith('(') || trimmed.startsWith('---') || trimmed.endsWith(':')) {
+                        return `<span class="section-title">${escapeHtml(trimmed)}</span>`;
+                    }
                 }
-                // Destacar acordes simples separados por espaço
-                let escaped = escapeHtml(line);
-                return escaped;
+                return escapeHtml(line);
             }).join('\n');
         }
 
@@ -686,7 +679,6 @@
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
         }
 
-        // Navegação de Músicas
         function nextSong() {
             if (state.isLocked) return;
             if (state.currentIndex < state.setlist.length - 1) {
@@ -707,7 +699,6 @@
             }
         }
 
-        // Modos e Preferências
         function changeViewMode(mode) {
             state.viewMode = mode;
             renderCurrentSong();
@@ -723,7 +714,6 @@
             }
         }
 
-        // BPM e Metrônomo Baseado em Web Audio API / IntervaloPreciso
         function adjustBpm(amount) {
             if (state.isLocked) return;
             state.tempBpm = Math.max(30, Math.min(240, state.tempBpm + amount));
@@ -754,14 +744,19 @@
 
         function startMetronome() {
             stopMetronome();
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) audioCtx = new AudioContext();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
             let beatCount = 0;
-
             const intervalMs = (60000 / state.tempBpm);
             metronomeTimer = setInterval(() => {
                 playClick(beatCount === 0);
                 flashDot(beatCount === 0);
-                beatCount = (beatCount + 4) % 4 === 0 ? 1 : beatCount + 1; // Simplificado 4/4
+                beatCount = (beatCount + 4) % 4 === 0 ? 1 : beatCount + 1;
             }, intervalMs);
         }
 
@@ -769,7 +764,7 @@
             if (metronomeTimer) clearInterval(metronomeTimer);
             metronomeTimer = null;
             const dot = document.getElementById('metronome-dot');
-            dot.className = "metronome-indicator";
+            if (dot) dot.className = "metronome-indicator";
         }
 
         function restartMetronome() {
@@ -794,40 +789,41 @@
 
         function flashDot(isAccent) {
             const dot = document.getElementById('metronome-dot');
+            if (!dot) return;
             dot.className = "metronome-indicator " + (isAccent ? "beat-accent" : "beat");
             setTimeout(() => {
-                dot.className = "metronome-indicator";
+                if (dot) dot.className = "metronome-indicator";
             }, 100);
         }
 
-        // Auto-Rolagem Musical Baseada em BPM e Altura
         function toggleAutoPlay() {
             state.isAutoPlaying = !state.isAutoPlaying;
             const btn = document.getElementById('btn-autoplay');
             if (state.isAutoPlaying) {
-                btn.innerText = "⏸ Pausar Auto";
+                if(btn) btn.innerText = "⏸ Pausar Auto";
                 startAutoScroll();
             } else {
-                btn.innerText = "▶ Iniciar Auto";
+                if(btn) btn.innerText = "▶ Iniciar Auto";
                 stopAutoPlay();
             }
         }
 
         function startAutoScroll() {
             stopAutoPlay();
-            const container = document.querySelector('.stage-view-container');
+            const container = document.getElementById('stage-container');
+            if (!container) return;
+            
             const song = getCurrentSong();
             const totalHeight = container.scrollHeight - container.clientHeight;
             if (totalHeight <= 0) return;
 
-            // Estimativa de duração baseada em BPM (ex: 32 compassos de 4 tempos)
             const estimatedSeconds = (32 * 4 * 60) / (song.bpm || 72);
-            const stepTime = 50; // ms
+            const stepTime = 50;
             const totalSteps = (estimatedSeconds * 1000) / stepTime;
             const scrollPerStep = totalHeight / totalSteps;
 
             autoScrollInterval = setInterval(() => {
-                if (container.scrollTop + container.clientHeight >= container.scrollHeight) {
+                if (container.scrollTop + container.clientHeight >= container.scrollHeight - 2) {
                     stopAutoPlay();
                     return;
                 }
@@ -843,7 +839,6 @@
             if(btn) btn.innerText = "▶ Iniciar Auto";
         }
 
-        // Transposição Simples de Semitons
         const scaleSharps = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
         const scaleFlats = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
@@ -868,19 +863,22 @@
             return scaleSharps[newIdx];
         }
 
-        // Modos Especiais (Palco / Bloqueio)
         function toggleStageMode() {
             state.isStageMode = !state.isStageMode;
             const header = document.getElementById('stage-header');
             const btn = document.getElementById('btn-stage-mode');
             if (state.isStageMode) {
                 header.classList.add('hidden');
-                btn.innerText = "Sair Palco";
-                if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(() => {});
+                if(btn) btn.innerText = "Sair Palco";
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                }
             } else {
                 header.classList.remove('hidden');
-                btn.innerText = "Modo Palco";
-                if (document.exitFullscreen && document.fullscreenElement) document.exitFullscreen().catch(() => {});
+                if(btn) btn.innerText = "Modo Palco";
+                if (document.exitFullscreen && document.fullscreenElement) {
+                    document.exitFullscreen().catch(() => {});
+                }
             }
         }
 
@@ -888,15 +886,18 @@
             state.isLocked = !state.isLocked;
             const btn = document.getElementById('btn-lock');
             if (state.isLocked) {
-                btn.innerText = "🔓 Destravar";
-                btn.style.backgroundColor = "var(--danger)";
+                if(btn) {
+                    btn.innerText = "🔓 Destravar";
+                    btn.style.backgroundColor = "var(--danger)";
+                }
             } else {
-                btn.innerText = "🔒 Travar";
-                btn.style.backgroundColor = "";
+                if(btn) {
+                    btn.innerText = "🔒 Travar";
+                    btn.style.backgroundColor = "";
+                }
             }
         }
 
-        // Biblioteca e Editor Modais
         function openLibraryModal() {
             renderLibraryList();
             document.getElementById('library-modal').classList.add('active');
@@ -908,10 +909,13 @@
 
         function renderLibraryList() {
             const container = document.getElementById('library-list');
-            const search = document.getElementById('lib-search').value.toLowerCase();
+            const searchInput = document.getElementById('lib-search');
+            if (!container || !searchInput) return;
+            
+            const search = searchInput.value.toLowerCase();
             container.innerHTML = "";
 
-            state.library.forEach((song, idx) => {
+            state.library.forEach((song) => {
                 if (search && !song.title.toLowerCase().includes(search) && !song.artist.toLowerCase().includes(search)) return;
 
                 const div = document.createElement('div');
@@ -921,9 +925,9 @@
                         <strong>${escapeHtml(song.title)}</strong> <span style="color: var(--text-muted); font-size: 0.8rem;">(${escapeHtml(song.artist)})</span>
                     </div>
                     <div style="display: flex; gap: 4px;">
-                        <button onclick="addToSetlist('${song.id}')">Adicionar</button>
-                        <button onclick="openEditorModal('${song.id}')">Editar</button>
-                        <button onclick="deleteMusic('${song.id}')" style="color: var(--danger);">Excluir</button>
+                        <button type="button" onclick="addToSetlist('${song.id}')">Adicionar</button>
+                        <button type="button" onclick="openEditorModal('${song.id}')">Editar</button>
+                        <button type="button" onclick="deleteMusic('${song.id}')" style="color: var(--danger);">Excluir</button>
                     </div>
                 `;
                 container.appendChild(div);
@@ -1023,7 +1027,6 @@
             alert("Música salva com sucesso!");
         }
 
-        // Importação e Exportação Segura via Blob
         function exportData() {
             const data = {
                 version: "1.0",
@@ -1065,7 +1068,6 @@
             reader.readAsText(file);
         }
 
-        // Atalhos de Teclado Globais
         window.addEventListener('keydown', (e) => {
             if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
 
@@ -1089,7 +1091,6 @@
             }
         });
 
-        // Inicializar ao carregar o DOM
         document.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
