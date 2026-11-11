@@ -1,0 +1,927 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#050c17">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cantata 2026">
+<title>Cantata 2026 · V10</title>
+<style>
+:root{--bg:#050c17;--panel:#0e1b2e;--line:#284361;--txt:#f8fafc;--mut:#a8b7ca;--gold:#ffbd18;--green:#31e4ad;--cyan:#29d3ff;--warn:#fb923c;--safe:env(safe-area-inset-bottom,0px)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;min-width:300px}
+button,input,select{font:inherit}
+.btn{position:relative;overflow:hidden;min-width:44px;min-height:44px;border:1px solid #3b5b7c;background:#132640;color:#fff;border-radius:12px;font-weight:800;padding:8px 11px;cursor:pointer;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.btn.on,.btn.primary{background:var(--gold);border-color:var(--gold);color:#152033}
+.btn::after{content:"";position:absolute;left:0;bottom:0;height:4px;width:0;background:var(--gold)}
+.btn.holding::after{width:100%;transition:width .9s linear}
+.top{position:sticky;top:0;z-index:20;padding:calc(5px + env(safe-area-inset-top,0px)) 8px 5px;background:#050c17f5;border-bottom:1px solid var(--line);display:grid;grid-template-columns:46px 1fr auto auto;gap:7px;align-items:center}
+.head{text-align:center;min-width:0}
+.head b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:16px}
+.head small{color:var(--mut);font-size:12px}
+.rollDot{display:none;color:var(--green);margin-right:6px}
+body.rolling .rollDot{display:inline}
+.key{background:var(--gold);color:#152033;border-radius:11px;font-weight:950;padding:9px 10px;text-align:center;min-width:46px;white-space:nowrap}
+.key.alt{background:var(--warn);box-shadow:0 0 0 2px #fff inset}
+#exitStage{display:none}
+.altBanner{display:none;background:#3a2410;border-bottom:1px solid var(--warn);color:#fed7aa;font-weight:800;font-size:13px;text-align:center;padding:6px 8px}
+.altBanner.show{display:block}
+.main{max-width:1100px;margin:auto;padding:8px 8px calc(84px + var(--safe))}
+.speed{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:50px;border:1px solid var(--line);border-radius:14px;background:#0b1829;margin-bottom:8px;padding:3px 6px 3px 12px;transition:opacity .35s}
+.speed .lbl{color:var(--mut);font-size:13px;font-weight:800;white-space:nowrap}
+body.rolling .speed .lbl{color:var(--green)}
+.spctl{display:flex;align-items:center;gap:6px}
+.spbtn{min-width:42px;min-height:42px;padding:4px 8px;font-size:18px}
+.spwrap{display:flex;align-items:center;gap:2px;font-weight:900}
+.spin{width:58px;min-height:42px;text-align:center;background:#071423;color:#fff;border:1px solid #486887;border-radius:10px;font-weight:900;-moz-appearance:textfield;appearance:textfield}
+.spin::-webkit-inner-spin-button,.spin::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.paper{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:16px 14px;min-height:60vh}
+#sheetMusic{font-size:17px;line-height:1.25}
+.ln{margin:0 0 .6em}
+.sg{display:inline-flex;flex-direction:column;vertical-align:bottom}
+.ch{white-space:pre;color:var(--gold);font-weight:800;min-height:1.25em}
+.ch.has{padding-right:.4em}
+.ly{white-space:pre}
+.cl{white-space:pre-wrap;color:var(--gold);font-weight:800;margin:.2em 0 .6em}
+.lab{color:var(--cyan);font-weight:800;margin:.8em 0 .4em}
+.blank{height:.7em}
+.card{white-space:pre-wrap;line-height:1.55;background:#0a1626;border:1px solid var(--line);border-radius:12px;padding:12px;margin:0 0 14px}
+.card h3{margin:0 0 6px;font-size:.85em;color:var(--green);letter-spacing:.04em}
+.bottom{position:fixed;z-index:25;left:50%;transform:translateX(-50%);bottom:calc(5px + var(--safe));width:min(1080px,calc(100% - 12px));height:62px;background:#0e1b2ef5;border:1px solid #3b5b7c;border-radius:16px;display:grid;grid-template-columns:48px 48px 1fr 48px;gap:6px;align-items:center;padding:6px;box-shadow:0 8px 30px #000b;transition:opacity .35s}
+.hide{opacity:0!important;pointer-events:none!important}
+.mini{text-align:center;min-width:0}
+.mini b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mini small{color:var(--mut)}
+.shade{display:none;position:fixed;inset:0;z-index:40;background:#000a}
+.shade.open{display:block}
+.sheet{position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:min(600px,100%);max-height:90vh;overflow:auto;background:#0c192b;border-top:1px solid #4c6c91;border-radius:20px 20px 0 0;padding:12px 14px calc(18px + var(--safe))}
+.sheet h3{margin:16px 0 8px;font-size:15px;color:var(--mut)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.songBtn{width:100%;text-align:left;margin:3px 0}
+.songBtn.cur{border-color:var(--cyan);background:#15304c}
+.bpm{width:66px;min-height:44px;text-align:center;background:#071423;color:#fff;border:1px solid #486887;border-radius:10px}
+.seek{width:100%;accent-color:var(--gold)}
+.count{display:none;position:fixed;inset:0;z-index:99;background:#020617ee;place-items:center;font-size:min(48vw,240px);font-weight:950;color:var(--gold)}
+.beats{display:flex;gap:5px}
+.beats i{width:12px;height:12px;border-radius:50%;background:#42536b}
+.beats i.on{background:var(--gold)}
+.small{color:var(--mut);font-size:13px}
+.toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:90;background:#0c192bf2;border:1px solid var(--gold);color:#fff;font-weight:800;border-radius:14px;padding:14px 18px;text-align:center;display:none;max-width:86vw}
+.toast.show{display:block}
+
+/* ===== POPUPS ===== */
+.modal{display:none;position:fixed;inset:0;z-index:70;background:#000c;align-items:center;justify-content:center;padding:14px}
+.modal.open{display:flex}
+.mbox{width:min(480px,100%);max-height:88vh;overflow:auto;background:#0c192b;border:1px solid #4c6c91;border-radius:18px;padding:18px 16px;box-shadow:0 20px 60px #000}
+.mbox h2{margin:0 0 4px;font-size:19px}
+.mbox .sub{color:var(--mut);font-size:13px;margin:0 0 12px}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:9px}
+.steps li{display:grid;grid-template-columns:42px 1fr;gap:10px;align-items:start;background:#0a1626;border:1px solid var(--line);border-radius:12px;padding:9px}
+.steps .ic{background:#132640;border:1px solid #3b5b7c;border-radius:10px;text-align:center;font-weight:900;padding:6px 0;color:var(--gold);white-space:nowrap}
+.steps b{display:block;font-size:14px}
+.steps span{color:#d6deea;font-size:13px;line-height:1.4}
+.tip{margin-top:10px;background:#3a2410;border:1px solid var(--warn);color:#fed7aa;border-radius:12px;padding:9px;font-size:13px}
+.mact{display:grid;gap:8px;margin-top:14px}
+.howto{display:none;margin-top:4px;background:#0a1626;border:1px solid var(--line);border-radius:12px;padding:10px;font-size:14px;line-height:1.55}
+.howto.show{display:block}
+.appicon{width:56px;height:56px;border-radius:14px;background:var(--gold);color:#152033;display:grid;place-items:center;font-size:30px;margin-bottom:10px}
+
+/* ===== MODO PALCO ===== */
+body.stage .top{grid-template-columns:1fr auto auto;padding:calc(3px + env(safe-area-inset-top,0px)) 8px 3px;border-bottom-color:#16263b}
+body.stage #menuBtn,body.stage #stageBtn,body.stage .head small{display:none}
+body.stage #exitStage{display:block;min-width:38px;min-height:38px;padding:4px 8px;background:transparent;border-color:#2a3f58;color:var(--mut)}
+body.stage .head{text-align:left}
+body.stage .head b{font-size:15px}
+body.stage .key{padding:5px 9px}
+body.stage .main{max-width:none;padding:4px 6px calc(130px + var(--safe))}
+body.stage .speed{position:fixed;z-index:24;left:50%;transform:translateX(-50%);bottom:calc(72px + var(--safe));margin:0;background:#0b1829e6;border-color:#3b5b7c;padding-left:10px}
+body.stage .paper{background:transparent;border:none;padding:6px 6px;min-height:80vh}
+body.stage .bottom{width:auto;grid-template-columns:52px 52px 52px;height:58px;background:#0e1b2ecc;gap:10px;padding:5px 8px}
+body.stage .mini{display:none}
+body.stage .bottom .btn{background:#13264099}
+body.stage .bottom .btn.primary{background:var(--gold)}
+@media(max-width:480px){.main{padding-left:5px;padding-right:5px}.paper{padding:12px 10px}.head b{font-size:15px}.speed .lbl{font-size:12px}}
+:focus-visible{outline:3px solid #7dd3fc;outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="count" class="count" aria-live="assertive"></div>
+<div id="toast" class="toast" role="status"></div>
+<header class="top">
+  <button id="menuBtn" class="btn" type="button" aria-label="Menu">☰</button>
+  <div class="head"><b><span id="rollDot" class="rollDot">↧</span><span id="title">Carregando...</span></b><small id="pos"></small></div>
+  <button id="stageBtn" class="btn" type="button" aria-label="Modo palco" title="Modo palco">⛶</button>
+  <div id="keyBox" class="key">—</div>
+  <button id="exitStage" class="btn" type="button" aria-label="Sair do modo palco">✕</button>
+</header>
+<div id="altBanner" class="altBanner"></div>
+<main class="main" id="mainArea">
+  <section class="speed" id="speedBar" aria-label="Velocidade da rolagem">
+    <span id="rollLbl" class="lbl">↧ Rolagem</span>
+    <div class="spctl">
+      <button id="spDown" class="btn spbtn" type="button" aria-label="Diminuir velocidade">−</button>
+      <label class="spwrap"><input id="spIn" class="spin" type="number" inputmode="numeric" min="30" max="200" step="5" aria-label="Velocidade da rolagem em porcentagem">%</label>
+      <button id="spUp" class="btn spbtn" type="button" aria-label="Aumentar velocidade">+</button>
+    </div>
+  </section>
+  <article class="paper"><div id="sheetMusic"></div></article>
+</main>
+<nav class="bottom" id="bottomBar">
+  <button id="prev" class="btn" type="button" aria-label="Música anterior">‹</button>
+  <button id="play" class="btn primary" type="button" aria-label="Iniciar">▶</button>
+  <div class="mini"><b id="mini"></b><small id="time">0:00 / 0:00</small></div>
+  <button id="next" class="btn" type="button" aria-label="Próxima música">›</button>
+</nav>
+<div id="shade" class="shade">
+  <section class="sheet" role="dialog" aria-modal="true">
+    <div class="row" style="justify-content:space-between"><b>Ajustes</b><button id="closeBtn" class="btn" type="button">✕</button></div>
+    <button id="stageBtn2" class="btn primary" type="button" style="width:100%;margin-top:12px">⛶ Entrar no modo palco</button>
+    <div class="grid" style="margin-top:8px"><button id="helpBtn" class="btn" type="button">❓ Como usar</button><button id="installBtn" class="btn" type="button">📲 Tela inicial</button></div>
+    <h3>Botão ▶</h3>
+    <button id="audioBtn" class="btn" type="button" style="width:100%"></button>
+    <div class="small" style="margin-top:6px">Ligado (ensaio): toca o MP3 e a página desce junto. Desligado (no dia): só contagem e rolagem, sem som.</div>
+    <div id="durInfo" class="small" style="margin-top:4px"></div>
+    <h3>O que mostrar</h3>
+    <div class="grid">
+      <button class="btn mode" data-mode="chart" type="button">🎸 Cifra + letra</button>
+      <button class="btn mode" data-mode="all" type="button">⭐ Tudo</button>
+      <button class="btn mode" data-mode="chords" type="button">🎹 Só cifra</button>
+      <button class="btn mode" data-mode="lyrics" type="button">🎤 Só letra</button>
+      <button class="btn mode" data-mode="guide" type="button">🗺 Guia</button>
+      <button class="btn mode" data-mode="drums" type="button">🥁 Bateria</button>
+      <button class="btn mode" data-mode="map" type="button">📋 Mapa</button>
+    </div>
+    <h3>Tom (meio em meio tom)</h3>
+    <div class="row"><button id="toneDown" class="btn" type="button">−½</button><div id="toneNow" class="key">—</div><button id="toneUp" class="btn" type="button">+½</button><button id="toneReset" class="btn" type="button">↺ Original</button></div>
+    <div id="toneInfo" class="small" style="margin-top:6px"></div>
+    <h3>Músicas</h3>
+    <div id="songList"></div>
+    <h3>Leitura</h3>
+    <div class="row"><button id="fontDown" class="btn" type="button">A−</button><button id="fontUp" class="btn" type="button">A+</button></div>
+    <h3>Ensaio</h3>
+    <input id="seek" class="seek" type="range" min="0" max="1000" value="0" aria-label="Posição do áudio">
+    <div class="row" style="margin-top:8px"><button id="back" class="btn" type="button">−10s</button><button id="fwd" class="btn" type="button">+10s</button></div>
+    <div class="row" style="margin-top:8px"><span class="small">BPM</span><button id="bpmDown" class="btn" type="button">−</button><input id="bpm" class="bpm" type="number" min="30" max="240" inputmode="numeric"><button id="bpmUp" class="btn" type="button">+</button><button id="tap" class="btn" type="button">TAP</button></div>
+    <div class="row" style="margin-top:8px"><button id="metro" class="btn" type="button">♩ Metrônomo</button><div class="beats"><i></i><i></i><i></i><i></i></div></div>
+    <div class="row" style="margin-top:8px"><label class="small">Contagem antes do ▶ <select id="countBeats" class="btn"><option value="0">Off</option><option value="4">1 compasso</option><option value="8">2 compassos</option></select></label></div>
+    <p class="small" style="margin-top:14px">Pedal Bluetooth de virar página: liga e pausa a rolagem.</p>
+  </section>
+</div>
+
+<div id="tutModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="tutTitle">
+  <div class="mbox">
+    <h2 id="tutTitle">🎼 Como usar o app</h2>
+    <p class="sub">Cantata 2026 · Olinda</p>
+    <ul class="steps">
+      <li><div class="ic">▶</div><div><b>Começar a música</b><span>Faz a contagem e a página desce sozinha até o fim. Toque de novo para pausar.</span></div></li>
+      <li><div class="ic">− +</div><div><b>Velocidade da rolagem</b><span>Ajuste de 5 em 5% ou toque no número para digitar. 100% = a página termina junto com a música. Fica gravado por música.</span></div></li>
+      <li><div class="ic">☰</div><div><b>Menu</b><span>Escolha o que ver (cifra, letra, guia, bateria), mude o tom de ½ em ½, ligue ou desligue o áudio do ▶ e ajuste o tamanho da letra.</span></div></li>
+      <li><div class="ic">⛶</div><div><b>Modo palco</b><span>Tela cheia e tela sempre acesa. Toque na tela para ver os controles. Para trocar de música, segure ‹ ou › por 1 segundo.</span></div></li>
+      <li><div class="ic">‹ ›</div><div><b>Trocar de música</b><span>Vai para a música anterior ou para a próxima, na ordem da cantata.</span></div></li>
+    </ul>
+    <div class="tip">Antes da cantata, abra cada música uma vez com internet. Assim a rolagem fica no tempo certo.</div>
+    <div class="mact">
+      <button id="tutClose" class="btn primary" type="button">Fechar</button>
+      <button id="tutNever" class="btn" type="button">Fechar e não mostrar novamente</button>
+    </div>
+  </div>
+</div>
+
+<div id="insModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="insTitle">
+  <div class="mbox">
+    <div class="appicon">🎼</div>
+    <h2 id="insTitle">Adicionar à tela inicial</h2>
+    <p class="sub">Abra a Cantata como um app, direto pelo ícone, em tela cheia e sem procurar o link.</p>
+    <div id="insHow" class="howto"></div>
+    <div class="mact" id="insActs">
+      <button id="insAdd" class="btn primary" type="button">📲 Adicionar à tela inicial</button>
+      <button id="insClose" class="btn" type="button">Fechar</button>
+      <button id="insNever" class="btn" type="button">Fechar e não mostrar novamente</button>
+    </div>
+    <div class="mact" id="insDoneActs" style="display:none">
+      <button id="insOk" class="btn primary" type="button">Entendi</button>
+    </div>
+  </div>
+</div>
+
+<audio id="audio" preload="metadata"></audio>
+<script>
+(function(){
+'use strict';
+
+/* ============ CIFRAS (fonte: Cantata 2026 Olinda - Letra + Cifras.docx) ============
+   @ = linha de cifra presa à letra da linha seguinte (espaços originais do Word)
+   ! = linha só de cifra / introdução
+   # = rótulo
+   % = linha com acordes já ancorados na sílaba: [Acorde]sílaba
+*/
+
+var JE_VERSO=[
+'@C                                                F _ C',
+'NO PRINCÍPIO ERA O VER _ BO',
+'@                                               F7M              G',
+'E O VE RBO ESTAVA COM DEUS',
+'@     G/F                        C',
+'E O VERBO ERA DEUS',
+'@                                             F _ C                 G',
+'ELE ESTAVA NO PRINCÍ_PIO COM DEUS',
+'@G                                                     G/F                                                  F _ C _ F _ C',
+'TODAS AS COISAS FORAM FEITAS POR INTERMÉDIO DE_LE',
+'@G                    G/F                                                C',
+'E SEM ELE NADA DO QUE FOI FEITO SE FEZ',
+'@      G/B      Am7 _ F7M',
+'JESUS É O VER _ BO',
+'@                         D7 _ F/G',
+'JESUS É O VER _ BO',
+''];
+var JE_REF_C=[
+'@      C                   Em7      C                         Em7       Am7 ↔ G',
+'JESUS É ETERNO, JESUS SEMPRE EXISTIU',
+'@F7M              G/F           Em7             A7',
+'POR MEIO DE-E-LE TODAS AS COISAS',
+'@Dm7                                    F/G',
+'FORAM CRIADAS NO CÉU E NA TERRA',
+'@       C                  Em7       C                        Em7     Am7',
+'JESUS É ETERNO, JESUS SEMPRE EXISTIU',
+'@F7M   G/F               Em7               A7',
+'ELE É ANTES DE TODAS AS COISAS'];
+var JE_REF_D=[
+'#Sobe para D',
+'@      D                   F#m7     D                         F#m7      Bm7 ↔ A',
+'JESUS É ETERNO, JESUS SEMPRE EXISTIU',
+'@G7M              A/G           F#m7            B7',
+'POR MEIO DE-E-LE TODAS AS COISAS',
+'@Em7                                    G/A',
+'FORAM CRIADAS NO CÉU E NA TERRA',
+'@       D                  F#m7      D                        F#m7    Bm7',
+'JESUS É ETERNO, JESUS SEMPRE EXISTIU',
+'@G7M   A/G               F#m7              B7',
+'ELE É ANTES DE TODAS AS COISAS',
+'%J[Em7]ESUS É [D/F#]ETERNO, J[G7M]ESUS É O [G/A]VERBO [D]DE DEUS',
+'%J[Em7]ESUS É [D/F#]ETERNO, J[G7M]ESUS É O [G/A]VERBO [D]DE DEUS',
+'%J[Em7]ESUS É [D/F#]ETERNO, J[G7M]ESUS É O [G/A]VERBO [D]DE DEUS'];
+var JE=['!INTRO:  C :: C ::  F ::  F (2X)',''].concat(JE_VERSO,JE_REF_C,[
+'@    Dm7       C/E',
+'JESUS É ETERNO',
+'@   F7M           F/G         C',
+'JESUS É O VERBO DE DEUS',
+'',
+'!INTRO:  C :: C ::  F ::  F (2X)',''],JE_VERSO,JE_REF_C,[
+'%J[Dm7]ESUS É [C/E]ETERNO, J[F7M]ESUS É O [F/G]VERBO [C]DE DEUS [A]',
+''],JE_REF_D);
+
+var FD_REF=[
+'@                   D/F# _ G',
+'Vinde e cante _ mos',
+'@             Bm  _  A',
+'A esperan _ ça',
+'@                   D/F# _ G',
+'Hoje transbor _ da',
+'@                    Bm _ A',
+'A Ele dai gló _ ria',
+'@                        D/F#      G',
+'Eis que uma luz brilhou',
+'@                    Bm    Em',
+'Nasceu o Salvador',
+'@G         A        D',
+'O Filho de Deus',
+''];
+var FD=['#Afinação: E A D G B E','![Intro]  D ::  D ::  D ::  D','',
+'@D','No princípio era o Verbo',
+'@                          G','E o Verbo era Deus',
+'@D','Eis que o Verbo se fez carne',
+'@                G','E viveu entre nós','',
+'@A                                         G','Cheio de graça e verdade',
+'@ A                                          D','A vida e a luz dos homens','',
+'@                          G','Vinde e cantemos',
+'@                A','A esperança',
+'@                       G','Hoje transborda',
+'@                      A','A Ele dai glória',
+'@                         D/F#     G','Eis que uma luz brilhou',
+'@                     Bm     Em','Nasceu o Salvador',
+'@G         A         D','O Filho de Deus','',
+'@D                                                D','O povo que andava em trevas',
+'@                     G','Viu uma grande luz',
+'@D                                       D','Paz entre todos na terra',
+'@                   G','Já nasceu Jesus','',
+'@A                                         G','Cheio de graça e verdade',
+'@ A                                          D','A vida e a luz dos homens',''
+].concat(FD_REF,FD_REF,[
+'@G        A','Aleluia',
+'@G        A','Aleluia',
+'@G _ Bm _ A','A _ lelui _ a',
+'@G         A        D','O Filho de Deus',
+'@G _ Bm _ A','A _ lelui _ a',
+'@G _ Bm _ A','A _ lelui _ a',
+'@G _ Bm _ A','A _ lelui _ a',
+'@G        A         D','O Filho de Deus',''],FD_REF);
+
+var EX_V=[
+'@ E         A              B','Pelo que também',
+'@E              A        B','Deus o exaltou',
+'@Cº           C#m7  C#m/B        F#/A#','Sobremaneira    E           lhe Deu',
+'@     F#m7                       A/B                         E     A  B  A','O nome que está acima de todo o nome',
+'@E          A            B','Para que ao nome',
+'@E           A           B','de Jesus Se dobre',
+'@Cº            C#m7 _  C#m/B  _  F#/A#','todo o jo___e_____lho        No céu',
+'@   F#m7       A/B                      E  A  B  A','Na terra e debaixo da terra',''];
+var EX_C=[
+'@E                  A                B      E','E toda a língua confesse',
+'@E                     A                      B','Que jesus cristo é senhor',
+'@Cº       C#m7 C#m/B  F#/A#','Para a glória de deus pai',
+'@               F#m7       A/B','Para a glória de deus pai',''];
+var EX=['!INTRO: E :: A :: B (4X)',''].concat(EX_V,EX_C,EX_C,['!INTRO: E :: A :: B (2X)',''],EX_V,EX_C,EX_C,[
+'!(C#m7 _ C#m/B _ F#/A#)',
+'@               F#m7       A/B','Damos glória de deus pai',
+'!(C#m7 _ C#m/B _ F#/A#)',
+'@               F#m7       A/B','Damos glória de deus pai']);
+
+var EN_V=[
+'@D2','OUÇO O SOM DE MUITAS ÁGUAS',
+'@Bm7','OUÇO VOZES CELESTIAIS',
+'@G7M                                 D/F#','TODA A CRIAÇÃO CELEBRA',
+'@                              Bm    A2','AQUELE QUE VEM','',
+'@D2','MULTIDÕES COM VESTES BRANCAS',
+'@        Bm7','DE TODA LÍNGUA E NAÇÃO',
+'@C                                                      G/B','AGUARDANDO O GRANDE DIA',
+'@                          D/A                      A _  A     G/B    G/E','EM QUE O VERÃO FACE A FA_CE',''];
+var EN_R=[
+'@             C             G/B                 D2','SEUS OLHOS SÃO COMO FOGO',
+'@             C                  G/B           D2','SUA VOZ COMO UM TROVÃO',
+'@               C/G     Em       D2','SOBRE UM CAVALO BRANCO',
+'@           Asus   A   A   G/B   G/E','ELE VEMMMMM',
+'@      C         G/B                    D2','AMADO DAS NOSSAS ALMAS',
+'@            C                    G/B          D2','QUEREMOS CONTIGO ESTAR',
+'@         C/G  Em          D2                    Asus   A','O ESPÍRITO E A NOIVA DIZEM VEM'];
+var EN_RE=[
+'@              D            A/C#               E2','SEUS OLHOS SÃO COMO FOGO',
+'@             D                A/C#           E2','SUA VOZ COMO UM TROVÃO',
+'@                D/A    F#m       E2','SOBRE UM CAVALO BRANCO',
+'@          Bsus    B     B   A/C#    A/F#','ELE VEM',
+'@       D       A/C#                   E2','AMADO DAS NOSSAS ALMAS',
+'@           D                    A/C#          E2','QUEREMOS CONTIGO ESTAR',
+'@       D/A         F#m        E2','O ESPÍ _ RI_TO E A NOIVA',
+'@                Bsus   B   [ B   A/C#   A/F#]','DIZEM VEMMMMMM',''];
+var EN=['!INTRO: ::  D2  :  D2  :  Bm7(11)  :  Bm7(11)  :','!        :  D2  :  D2  :  Bm7(11)  :  G7M(9)   A  ::',''].concat(EN_V,EN_R,[
+'@                   Bm7(11)  : Bm7(11)  : G7M(9) : G7M(9)','SENHOR JESUS',''],EN_V,EN_R,[
+'@                         D2','SENHOR JESUS','',
+'#Ponte',
+'@                      F                         G                                 D','EIS QUE VEM COM AS NUVENS E TODO OLHO O VERÁ',
+'@D      G/E       F                     G                 Asus    A','AL  -  FA  E  ÔMEGA, PRINCÍPIO E FIM',
+'@        F                      G                              D','AQUELE QUE QUISER BEBA DA ÁGUA DA VIDA',
+'@              F                             G','POIS SEM DEMORA VEM',
+'@G/B                               A/C#','VEM PRA NOS BUSCAR',
+'@             F/D                            G/E','SEGUNDO AS NOSSAS OBRAS',
+'@            G                 A','NOS RETRIBUIRÁ',
+'@           F                                  G','NO SANGUE DO CORDEIRO',
+'@          F/A                        F/G  _  G/A','QUEREMOS NOS LAVA _ AR','',
+'#Refrão em E'],EN_RE,EN_RE,[
+'@          E               D','SENHOR JESUS',
+'@          E               A','SENHOR JESUS']);
+
+var PM_R=[
+'@     C                    G/B             Am7  F','Por que me amou tanto assim?',
+'@   C/E                   G                                   Gm  C7','Jesus se entregou pra morrer por mim',
+'@         F         C/E  Dm','Sentiu to_da a dor',
+'@                    Am7    Am/G  _  F#m7','que eu deveria sentir'];
+var PM=['![Intro] Dm7  C  F7M  G4  G','!Dm7  Am7  Ab7M  Fm  F/G  C/E','',
+'@ Dm7                                                 Am7','Foi no alto de um monte que levantaram a cruz',
+'@    F                            F#°                    G','Muita gente se reuniu para ver Jesus',
+'@              F                                          C/E','Enquanto uns xingavam e dizia pra Ele descer',
+'@         Bb                F/A                       G4   G','Ninguém entendia o que Ele tinha vindo fazer','',
+'!( Am  F  Dm )','#[Refrão]'].concat(PM_R,[
+'@        F7M      G4                G            Am7','Na cruz, Jesus me amou  até o fim','',
+'#[Segunda Parte]',
+'@Dm7                                      Am7                           Am  G','De repente o céu escureceu e a terra tremeu',
+'@F                                                  Am7','As pessoas viram que Ele era o Filho de Deus',
+'@          F                                                     C/E','Enquanto estava ali sofrendo, Jesus declarou',
+'@    Bb                           F/A','Que tudo estava terminado',
+'@    G4                                  G','A força do pecado acabou','',
+'@                    Dm7     G','Ele conseguiu',
+'@                        F/C     C    Am7','Destruiu a maldição',
+'@                                 F   C/E','A missão cumpriu',
+'@                     Dm7  C/E  F  G F/A  G/B  G','derrotou o mal e a - gora   as   pe_sso___as',
+'@                      Am   G/B','Podem ser livres',
+'@                            F        C/E','Podem ser felizes',
+'@                          Dm7  G                     F/C   C         G','é só crer em Jesus   e no poder da  cruz','',
+'#[Refrão]'],PM_R,[
+'@        F7M      G4                                 Am7','Na cruz, Jesus me amou  até o fim',
+'@                           G/B                     F7M','Porque me amou  tanto     assim?',
+'@                      G4                                 Am7','Na cruz, Jesus me amou   até o fim',
+'@                           G/B                     F7M','Porque me amou tanto assim?',
+'@                      G4                                 Am7','Na cruz, Jesus me amou   até o fim']);
+
+var RS=['![Intro] C  G  C  G (2X)','',
+'@C','  Porque olhar dentre os mortos',
+'@                                   G','Quem vivo está?',
+'@C','  Porque procurar no que já foi',
+'@                             G','Aquele que é?','',
+'@                 Am                                 F','Não há mais razão pra chorar',
+'@         G                     Am','A morte não O segurou',
+'@     Em                              C','A eternidade agora toca aqui',
+'@  G                           F','Luz sobre a escuridão',
+'@     Am                       C','O Redentor ressuscitou','',
+'![Intro] C  G  C  G','',
+'@C','  Porque olhar dentre os mortos',
+'@                                 G','Quem vivo está?',
+'@ C','  Porque procurar no que já foi',
+'@                       G','Aquele que é?','',
+'@                  Am                                F','Não há mais razão pra chorar',
+'@        G                      Am','A morte não O segurou',
+'@       Em                           C','A eternidade agora toca aqui',
+'@  G                          F','Luz sobre a escuridão',
+'@      Am                  C','O Redentor ressuscitou','',
+'![Intro] C  G  C  G','',
+'@              Am                                  F','Não há mais razão pra chorar',
+'@         G                       Am','A morte não O segurou',
+'@        Em                          C','A eternidade agora toca aqui',
+'@ G                           F','Luz sobre a escuridão',
+'@     Am                      C','O Redentor ressuscitou',
+'@          G                    Am','A morte não O segurou',
+'@     Em                              C','A eternidade agora toca aqui',
+'@  G                          F','Luz sobre a escuridão',
+'@      Am                   C','O Redentor ressuscitou','',
+'![Intro] C  G  C  G'];
+
+var JN_V=[
+'@Am           D      Am          D','Como Deus ungiu a Jesus de Nazaré',
+'@Am         D     Am     D','Com Espirito Santo e poder (2x)',''];
+var JN_P=[
+'@C           G/B         Am     F','  O qual andou por toda pa__arte',
+'@C            G/B     Am                F','  Fazendo o bem e curando a todos os oprimidos',
+'@C         G/B         Am      F','  Porque Deus era com E___E__le',
+'@C         G/B         Am      F','  Porque Deus era com E___E__le',''];
+var JN_B=[
+'@C           G/B        Am   G    F','  O qual não cometeu peca__ a __do',
+'@Ou: Dm            Em    Am G    F  Am   G  F',
+'@Ou: Am            G/B   Am G    F  Am   G  F','      E nem na sua boca se a__chou erro algum',''];
+var JN=['!INTRO: C G/B Am F (4X)',''].concat(JN_V,JN_P,['!INTRO: C G/B Am F (4X)',''],JN_V,JN_P,[
+'@C            G/B','  Jesus de Nazaré',
+'@Am          F','  Jesus de Nazaré',
+'@C       G/B        F','  Esse nome tem poder (2x)',''],JN_B,JN_B,[
+'@C            G/B','  Jesus de Nazaré',
+'@Am          F','  Jesus de Nazaré',
+'@C       G/B        F','  Esse nome tem poder (4x)','',
+'!INTRO: C G/B Am F (4X)']);
+
+var EM=['#🎧 PLAYBACK — MÚSICOS NÃO TOCAM','','Aguardar o término da faixa.','','#Próxima: Porque Me Amou Tanto Assim · Tom C'];
+
+var SONGS=[
+{id:'jesus-e-eterno-daniel',order:'1',title:'Jesus É Eterno',artist:'Daniel de Souza',key:'C → D',bpm:76,src:JE,
+ seq:'Intro 2x › Verso › Refrão › Intro 2x › Verso › Refrão › Sobe para D › Final',
+ guide:'Intro suave, banda completa com caixa.\nVerso suave, banda completa com aro da bateria.\nRefrão: mantém banda com chimbal, caixa e bumbo.\nSolo de guitarra: dois tempos de 4.\nVolta suave com aro da bateria.\nSobe o tom (D): mantém bateria; restante marca em “Jesus é eterno”.\nFinaliza com a introdução 2x.',
+ drums:'Intro: suave com caixa.\nVersos: aro.\nRefrão: chimbal + caixa + bumbo.\nSolo: manter dois tempos de 4.\nSubida para D: bateria sustenta; banda marca “Jesus é eterno”.\nFinal: introdução 2x.'},
+{id:'emanuel-purples-playback',order:'2',title:'Emanuel',artist:'Crianças · Playback',key:'—',bpm:72,src:EM,
+ seq:'Playback · músicos não tocam',
+ guide:'Playback das crianças. Músicos aguardam o fim da faixa.\nEm seguida: Porque Me Amou Tanto Assim, tom C.',drums:'Sem bateria ao vivo. Playback completo.'},
+{id:'porque-me-amou-tanto-assim',order:'3',title:'Porque Me Amou Tanto Assim',artist:'Diante do Trono',key:'C',bpm:80,src:PM,
+ seq:'Intro › Verso › Refrão › Segunda parte › Refrão › Final',
+ guide:'Intro 4 tempos: guitarra e chimbal.\nIntro 4 tempos: banda completa.\nVerso: banda completa (chimbal, caixa e bumbo).\nRefrão: cresce com ataque, caixa e bumbo.\nSegunda parte: bumbo no tempo, restante no contratempo.\nMantém no pré e refrão.\nFinal: voz principal e back alternam.',
+ drums:'Intro 1: chimbal com guitarra, 4 tempos.\nIntro 2: banda completa.\nVerso: chimbal, caixa e bumbo.\nRefrão: crescer com ataque.\nSegunda parte: bumbo no tempo, banda no contratempo.\nManter no refrão final.'},
+{id:'ressureicao',order:'4',title:'Ressurreição',artist:'Projeto Sola',key:'C',bpm:74,src:RS,
+ seq:'Intro 2x › Verso › Refrão › Intro › Verso › Refrão › Intro › Refrão › Repete “A morte...” › Intro',
+ guide:'Intro: 2 violão solo + 2 banda com bateria rufando.\nVerso: violão e guitarra; banda marca no fim da frase.\nRefrão 1: banda suave, bateria só no bumbo; todos crescem no final.\nBateria para; banda marca suave e cresce nas duas últimas frases.\nIntro 4x: 2 violão + 2 banda e rufos.\nSegundo refrão: banda completa.\nÚltima intro: acabar sem a última batida.',
+ drums:'Intros: rufos nos blocos de banda.\nRefrão 1: só bumbo, crescer no final; depois PARAR.\nRefrão 2: banda completa.\nÚltima intro: termina SEM a última batida.'},
+{id:'jesus-foi-exaltado',order:'5',title:'Jesus Foi Exaltado',artist:'Daniel Souza',key:'E',bpm:88,src:EX,
+ seq:'Intro 4x › Verso › Refrão 2x › Intro 2x › Verso › Refrão 2x › Final 2x',
+ guide:'Intro 4 tempos 4/4: banda completa, solo de guitarra e caixa aberta.\nVerso: suave com aro da bateria.\nRefrão: cresce com banda completa, caixa aberta e prato de ataque.\nIntro curta: 2 tempos 4/4.\nFinal: introdução curta e queda no último tempo.',
+ drums:'Intro 4x: caixa aberta, banda completa.\nVerso: aro, suave.\nRefrão: caixa aberta + prato de ataque.\nSegunda intro: 2 tempos.\nFinal: cair no último tempo.'},
+{id:'o-espirito-e-a-noiva-dizem-vem',order:'6',title:'O Espírito e a Noiva Dizem Vem',artist:'Diante do Trono',key:'D → E',bpm:78,src:EN,
+ seq:'Intro › Verso › Refrão › Senhor Jesus › Verso › Refrão › Senhor Jesus › Ponte › Refrão em E 2x › Final',
+ guide:'Intro 8 tempos: banda completa, solo de guitarra, bumbo e chimbal.\nVerso: suave com chimbal e bumbo.\nRefrão: cresce com caixa, bumbo e chimbal.\nMantém com bateria atacando.\nPonte cresce e modula para E.\nRefrões em E com banda completa.',
+ drums:'Intro: bumbo + chimbal.\nVerso: suave.\nRefrão: caixa + bumbo + chimbal.\nAtacar antes da ponte.\nSustentar a modulação para E e manter os refrões finais.'},
+{id:'jesus-de-nazare',order:'EXTRA',title:'Jesus de Nazaré',artist:'Joel Jordão',key:'C',bpm:92,src:JN,
+ seq:'Intro 4x › Verso 2x › Pré › Intro 4x › Verso 2x › Pré › Refrão 2x › Ponte 2x › Refrão 4x › Intro 4x',
+ guide:'Intro: banda completa marcando 4 tempos 4/4.\nAntes do refrão: cai um pouco; bumbo marca a ida.\nRefrão: banda forte com chimbal aberto, caixa e bumbo.\nPonte: banda cai suave; bateria marca no bumbo.\nRefrões finais fortes.\nFinaliza com a introdução.',
+ drums:'Intro: marcar 4/4.\nAntes do refrão: reduzir, manter bumbo.\nRefrão: chimbal aberto + caixa + bumbo.\nPonte: suave no bumbo.\nRefrões finais fortes. Encerrar na intro.'},
+{id:'o-filho-de-deus',order:'RESERVA',title:'O Filho de Deus',artist:'Fhop',key:'D',bpm:78,src:FD,
+ seq:'Intro › Verso › Verso 2 › Refrão 2x › Aleluia › Refrão',
+ guide:'Música reserva (fora da ordem oficial). Seguir o guia combinado no ensaio.',drums:'Música reserva. Seguir orientação do ensaio.'}
+];
+SONGS.forEach(function(s){s.audio='assets/'+s.id+'.mp3';});
+var DEFAULT_DUR=240;
+
+/* ============ ANCORAGEM: acorde preso à sílaba ============ */
+var K=0.84;
+var cv=document.createElement('canvas').getContext('2d');
+var MF='100px Calibri, Carlito, Aptos, "Segoe UI", Arial, sans-serif';
+var cache={};
+function mw(t,bold){var k=(bold?'b':'n')+t;if(cache[k]!==undefined)return cache[k];cv.font=(bold?'700 ':'400 ')+MF;var w=cv.measureText(t).width;cache[k]=w;return w;}
+function idxAt(ly,x){
+  var tol=mw(' ',false)*0.3,i=0;
+  for(var j=1;j<=ly.length;j++){if(mw(ly.slice(0,j),false)<=x+tol)i=j;else break;}
+  if(i>=ly.length)return ly.length;
+  while(i<ly.length&&ly.charAt(i)===' ')i++;
+  return i;
+}
+function anchorsFromRow(row,ly){
+  var re=/\S+/g,m,res=[];
+  while((m=re.exec(row))){
+    var x=mw(row.slice(0,m.index),true)*K;
+    var i=idxAt(ly,x);
+    if(res.length&&res[res.length-1].i>=i){res[res.length-1].t+=' '+m[0];}
+    else res.push({i:i,t:m[0]});
+  }
+  return res;
+}
+function parseCP(s){
+  var ly='',an=[],re=/\[([^\]]+)\]/g,last=0,m;
+  while((m=re.exec(s))){ly+=s.slice(last,m.index);an.push({i:ly.length,t:m[1]});last=re.lastIndex;}
+  ly+=s.slice(last);
+  if(an.length&&an[an.length-1].i>=ly.replace(/\s+$/,'').length){an[an.length-1].i=ly.length;}
+  return {ly:ly,rows:[an]};
+}
+function parse(src){
+  var out=[],pend=[];
+  function flush(){pend.forEach(function(r){out.push({t:'cl',s:r});});pend=[];}
+  src.forEach(function(raw){
+    var c=raw.charAt(0);
+    if(c==='@'){pend.push(raw.slice(1));return;}
+    if(pend.length){
+      if(raw!==''&&c!=='!'&&c!=='#'&&c!=='%'){
+        var rows=pend.map(function(r){return anchorsFromRow(r,raw);});
+        out.push({t:'pair',ly:raw,rows:rows,raw:pend.slice()});pend=[];return;
+      }
+      flush();
+    }
+    if(raw==='')out.push({t:'blank'});
+    else if(c==='!')out.push({t:'cl',s:raw.slice(1)});
+    else if(c==='#')out.push({t:'lab',s:raw.slice(1)});
+    else if(c==='%'){var p=parseCP(raw.slice(1));out.push({t:'pair',ly:p.ly,rows:p.rows,raw:[p.rows[0].map(function(a){return a.t;}).join('   ')]});}
+    else out.push({t:'ly',s:raw});
+  });
+  flush();
+  return out;
+}
+
+/* ============ TRANSPOSIÇÃO ============ */
+var SH=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'],FL=['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+var IDX={C:0,'B#':0,'C#':1,Db:1,D:2,'D#':3,Eb:3,E:4,Fb:4,'E#':5,F:5,'F#':6,Gb:6,G:7,'G#':8,Ab:8,A:9,'A#':10,Bb:10,B:11,Cb:11};
+function trNote(n,a,d){var k=n+(a||'');var i=IDX[k];if(i===undefined)return k;return (a==='b'?FL:SH)[((i+d)%12+12)%12];}
+function tr(s,d){if(!d)return s;return s.replace(/([A-G])(#|b)?/g,function(m,n,a){return trNote(n,a,d);});}
+
+/* ============ ESTADO (gravado por nome da música) ============ */
+var $=function(s){return document.querySelector(s);},$$=function(s){return Array.prototype.slice.call(document.querySelectorAll(s));};
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+SONGS.forEach(function(s,i){
+  if(lsGet('v8shift-'+s.id)===null&&lsGet('v7shift'+i)!==null)lsSet('v8shift-'+s.id,lsGet('v7shift'+i));
+  if(lsGet('v8bpm-'+s.id)===null&&lsGet('v7bpm'+i)!==null)lsSet('v8bpm-'+s.id,lsGet('v7bpm'+i));
+});
+var cur=0,mode=lsGet('v7mode')||'chart',font=+(lsGet('v7font')||17),parsed={},audio=$('#audio'),stage=false;
+function sid(){return SONGS[cur].id;}
+function shift(){return +(lsGet('v8shift-'+sid())||0);}
+function esc(s){return String(s).replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c];});}
+function getParsed(i){if(!parsed[i])parsed[i]=parse(SONGS[i].src);return parsed[i];}
+
+function pairHTML(b,d){
+  var ly=b.ly,len=ly.length,set={};
+  b.rows.forEach(function(r){r.forEach(function(a){set[a.i]=1;});});
+  var idx=Object.keys(set).map(Number).sort(function(a,b){return a-b;});
+  if(idx[0]!==0)idx.unshift(0);
+  var bounds=idx.concat([len]),html='';
+  for(var k=0;k<idx.length;k++){
+    var a=idx[k],e=Math.max(bounds[k+1],a);
+    var chords=b.rows.map(function(r){var f=r.filter(function(x){return x.i===a;});return f.length?tr(f.map(function(x){return x.t;}).join(' '),d):'';});
+    var text=ly.slice(a,e);
+    var pieces=text.length?text.match(/[^ ]+ *| +/g):[''];
+    pieces.forEach(function(p,pi){
+      html+='<span class="sg">';
+      chords.forEach(function(c){var t=pi===0?c:'';html+='<span class="ch'+(t?' has':'')+'">'+(t?esc(t):'&nbsp;')+'</span>';});
+      html+='<span class="ly">'+(p?esc(p):'&nbsp;')+'</span></span>';
+    });
+  }
+  return '<div class="ln">'+html+'</div>';
+}
+function renderSheet(){
+  var s=SONGS[cur],d=shift(),blocks=getParsed(cur),h='';
+  function card(t,txt){return '<div class="card"><h3>'+t+'</h3>'+esc(txt)+'</div>';}
+  if(mode==='guide'){h=card('GUIA DE DINÂMICA',s.guide);}
+  else if(mode==='drums'){h=card('🥁 GUIA DA BATERIA',s.drums);}
+  else if(mode==='map'){h=card('ORDEM DA MÚSICA',s.seq.split('›').map(function(x,i){return (i+1<10?'0':'')+(i+1)+' · '+x.trim();}).join('\n'));}
+  else{
+    if(mode==='all')h+=card('GUIA DE DINÂMICA',s.guide)+card('🥁 BATERIA',s.drums);
+    blocks.forEach(function(b){
+      if(b.t==='blank'){h+='<div class="blank"></div>';return;}
+      if(b.t==='lab'){h+='<div class="lab">'+esc(b.s)+'</div>';return;}
+      if(mode==='lyrics'){
+        if(b.t==='pair'||b.t==='ly')h+='<div class="ln">'+esc(b.t==='pair'?b.ly:b.s)+'</div>';
+        return;
+      }
+      if(mode==='chords'){
+        if(b.t==='cl')h+='<div class="cl">'+esc(tr(b.s,d))+'</div>';
+        else if(b.t==='pair')b.raw.forEach(function(r){h+='<div class="cl">'+esc(tr(r.trim().replace(/\s+/g,'   '),d))+'</div>';});
+        return;
+      }
+      if(b.t==='cl')h+='<div class="cl">'+esc(tr(b.s,d))+'</div>';
+      else if(b.t==='ly')h+='<div class="ln"><span class="ly">'+esc(b.s)+'</span></div>';
+      else if(b.t==='pair')h+=pairHTML(b,d);
+    });
+  }
+  var el=$('#sheetMusic');el.innerHTML=h;el.style.fontSize=font+'px';
+  $$('.mode').forEach(function(x){x.classList.toggle('on',x.dataset.mode===mode);});
+  lsSet('v7mode',mode);
+  updateKey();
+}
+function keyText(){var k=SONGS[cur].key;if(k==='—')return '—';return tr(k,shift());}
+function updateKey(){
+  var d=shift(),s=SONGS[cur],kt=keyText();
+  $('#keyBox').textContent=kt;$('#toneNow').textContent=kt;
+  $('#keyBox').classList.toggle('alt',d!==0);
+  $('#toneInfo').textContent='Original: '+s.key+' · '+(d===0?'tom original':(d>0?'+':'')+d+' semitom'+(Math.abs(d)===1?'':'s'));
+  var b=$('#altBanner');
+  if(d!==0){b.textContent='⚠ Tom alterado: '+kt+' (original '+s.key+')';b.classList.add('show');}
+  else b.classList.remove('show');
+}
+function renderList(){
+  $('#songList').innerHTML=SONGS.map(function(s,i){return '<button type="button" class="btn songBtn'+(i===cur?' cur':'')+'" data-i="'+i+'">'+esc(s.order)+'. '+esc(s.title)+' · '+esc(s.key)+'</button>';}).join('');
+  $$('.songBtn').forEach(function(b){b.addEventListener('click',function(){load(+b.dataset.i);closeSheet();});});
+}
+function openSheet(){if(stage)return;$('#shade').classList.add('open');}
+function closeSheet(){$('#shade').classList.remove('open');}
+$('#menuBtn').addEventListener('click',openSheet);
+$('#closeBtn').addEventListener('click',closeSheet);
+$('#shade').addEventListener('click',function(e){if(e.target===$('#shade'))closeSheet();});
+$$('.mode').forEach(function(b){b.addEventListener('click',function(){mode=b.dataset.mode;renderSheet();closeSheet();});});
+function setShift(v){if(SONGS[cur].key==='—')return;v=Math.max(-11,Math.min(11,v));lsSet('v8shift-'+sid(),v);renderSheet();}
+$('#toneUp').addEventListener('click',function(){setShift(shift()+1);});
+$('#toneDown').addEventListener('click',function(){setShift(shift()-1);});
+$('#toneReset').addEventListener('click',function(){setShift(0);});
+$('#fontUp').addEventListener('click',function(){font=Math.min(30,font+1);lsSet('v7font',font);renderSheet();});
+$('#fontDown').addEventListener('click',function(){font=Math.max(11,font-1);lsSet('v7font',font);renderSheet();});
+
+/* ============ TOAST ============ */
+var toastT=null;
+function toast(msg,ms){var t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){t.classList.remove('show');},ms||1400);}
+
+/* ============ UTILIDADES DE ÁUDIO ============ */
+function fmt(n){return isFinite(n)&&n>=0?Math.floor(n/60)+':'+('0'+Math.floor(n%60)).slice(-2):'0:00';}
+function bpmV(){return Math.max(30,Math.min(240,+$('#bpm').value||60));}
+var actx=null;
+function tick(acc){
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();
+  var o=actx.createOscillator(),g=actx.createGain();o.frequency.value=acc?1200:820;g.gain.setValueAtTime(.15,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+.07);o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+.08);}catch(e){}
+}
+function wait(ms){return new Promise(function(r){setTimeout(r,ms);});}
+function audioOn(){return lsGet('v9audio')!=='0';}
+function updAudioBtn(){$('#audioBtn').textContent=audioOn()?'🔊 Áudio no ▶: Ligado':'🔇 Áudio no ▶: Desligado';$('#audioBtn').classList.toggle('on',audioOn());}
+function audioDurOk(){return isFinite(audio.duration)&&audio.duration>0;}
+function dur(){if(audioDurOk())return audio.duration;var s=+lsGet('v9dur-'+sid());return s>0?s:DEFAULT_DUR;}
+function updDurInfo(){
+  var t='Duração de referência da rolagem: '+fmt(dur());
+  if(audioDurOk())t+=' (do MP3)';else if(+lsGet('v9dur-'+sid())>0)t+=' (gravada do MP3)';else t+=' (estimada — MP3 ainda não carregado)';
+  $('#durInfo').textContent=t;
+}
+
+/* ============ VELOCIDADE (por música) ============ */
+function speed(){var v=+lsGet('v9speed-'+sid());return v>=30&&v<=200?v:100;}
+function setSpeed(v){v=Math.round(+v||100);v=Math.max(30,Math.min(200,v));lsSet('v9speed-'+sid(),v);$('#spIn').value=v;}
+$('#spDown').addEventListener('click',function(){setSpeed(speed()-5);showControls();});
+$('#spUp').addEventListener('click',function(){setSpeed(speed()+5);showControls();});
+$('#spIn').addEventListener('change',function(){setSpeed(this.value);});
+$('#spIn').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();this.blur();}});
+$('#spIn').addEventListener('blur',function(){setSpeed(this.value);});
+
+/* ============ MOTOR DA ROLAGEM AUTOMÁTICA ============ */
+var R={state:'idle',useAudio:false,vt:0,lastT:0,pos:0,hold:0,raf:null,lastFrame:0};
+var counting=false,countToken=0;
+function maxY(){return Math.max(0,document.documentElement.scrollHeight-window.innerHeight);}
+function nowT(){return R.useAudio?audio.currentTime:R.vt;}
+function updPlay(){
+  $('#play').textContent=R.state==='running'?'❚❚':'▶';
+  document.body.classList.toggle('rolling',R.state==='running');
+  $('#rollLbl').textContent=R.state==='running'?'↧ Rolando':(R.state==='paused'?'❚❚ Pausado':'↧ Rolagem');
+}
+function updTime(){
+  var t=R.useAudio||R.state==='idle'?audio.currentTime:R.vt;
+  $('#time').textContent=fmt(t)+' / '+fmt(dur());
+}
+function frame(ts){
+  if(R.state!=='running'){R.raf=null;return;}
+  var dt=R.lastFrame?Math.min(0.25,(ts-R.lastFrame)/1000):0;R.lastFrame=ts;
+  if(!R.useAudio)R.vt+=dt;
+  var t=nowT(),dT=t-R.lastT;R.lastT=t;
+  var my=maxY();
+  if(Date.now()<R.hold){R.pos=window.scrollY;}
+  else if(Math.abs(window.scrollY-R.pos)>6){R.pos=window.scrollY;}
+  else{
+    R.pos+=dT*my/dur()*speed()/100;
+    R.pos=Math.max(0,Math.min(my,R.pos));
+    window.scrollTo(0,R.pos);
+  }
+  if(!R.useAudio){
+    updTime();
+    if(R.vt>=dur()*100/speed()){finishRoll();return;}
+  }
+  R.raf=requestAnimationFrame(frame);
+}
+function startRoll(){
+  R.state='running';R.lastT=nowT();R.pos=window.scrollY;R.lastFrame=0;R.hold=0;
+  updPlay();
+  if(!R.raf)R.raf=requestAnimationFrame(frame);
+}
+function pauseRoll(){
+  R.state='paused';
+  if(R.useAudio&&!audio.paused)audio.pause();
+  updPlay();
+}
+function finishRoll(){R.state='idle';R.vt=0;updPlay();}
+function cancelCount(){if(counting){countToken++;counting=false;$('#count').style.display='none';}}
+async function countIn(){
+  var n=+$('#countBeats').value;if(!n)return true;
+  var my=++countToken;counting=true;var box=$('#count');box.style.display='grid';
+  for(var i=n;i>0;i--){
+    if(my!==countToken)return false;
+    box.textContent=i;tick((n-i)%4===0);await wait(60000/bpmV());
+  }
+  box.style.display='none';counting=false;
+  return my===countToken;
+}
+async function onPlay(){
+  if(counting){cancelCount();updPlay();return;}
+  if(R.state==='running'){pauseRoll();return;}
+  if(R.state==='paused'){
+    if(R.useAudio){try{await audio.play();}catch(e){R.useAudio=false;R.vt=audio.currentTime||R.vt;}}
+    startRoll();return;
+  }
+  R.useAudio=audioOn();R.vt=0;
+  if(maxY()>0&&window.scrollY>=maxY()-2)window.scrollTo(0,0);
+  if(R.useAudio&&(audio.ended||(audioDurOk()&&audio.currentTime>=audio.duration-0.5)))audio.currentTime=0;
+  var ok=await countIn();if(!ok)return;
+  if(R.useAudio){
+    try{await audio.play();}
+    catch(e){R.useAudio=false;R.vt=0;toast('MP3 não encontrado ('+SONGS[cur].audio+') · rolando sem áudio',2800);}
+  }
+  startRoll();
+}
+$('#play').addEventListener('click',function(){onPlay();showControls();});
+audio.addEventListener('pause',function(){if(R.useAudio&&R.state==='running'&&!audio.ended){R.state='paused';updPlay();}});
+audio.addEventListener('play',function(){if(R.useAudio&&R.state==='paused'){startRoll();}});
+audio.addEventListener('ended',function(){if(R.useAudio){finishRoll();}});
+audio.addEventListener('timeupdate',function(){if(audioDurOk()){$('#seek').value=audio.currentTime/audio.duration*1000;}if(R.useAudio||R.state==='idle')updTime();});
+audio.addEventListener('loadedmetadata',function(){if(audioDurOk())lsSet('v9dur-'+sid(),Math.round(audio.duration));updDurInfo();updTime();});
+audio.addEventListener('error',function(){updDurInfo();});
+$('#seek').addEventListener('input',function(){if(audioDurOk())audio.currentTime=this.value/1000*audio.duration;});
+$('#back').addEventListener('click',function(){audio.currentTime=Math.max(0,audio.currentTime-10);});
+$('#fwd').addEventListener('click',function(){audio.currentTime=Math.min(audio.duration||1e9,audio.currentTime+10);});
+$('#audioBtn').addEventListener('click',function(){
+  var on=!audioOn();lsSet('v9audio',on?'1':'0');updAudioBtn();
+  if(R.state==='idle')return;
+  if(!on&&R.useAudio){R.vt=audio.currentTime;R.useAudio=false;audio.pause();R.lastT=R.vt;}
+  else if(on&&!R.useAudio){
+    R.useAudio=true;try{audio.currentTime=R.vt;}catch(e){}R.lastT=R.vt;
+    if(R.state==='running'){var p=audio.play();if(p&&p.catch)p.catch(function(){R.useAudio=false;toast('MP3 não encontrado · rolando sem áudio',2400);});}
+  }
+});
+
+function userHold(){if(R.state==='running')R.hold=Date.now()+3000;}
+window.addEventListener('wheel',userHold,{passive:true});
+window.addEventListener('touchmove',function(e){if(e.target.closest&&e.target.closest('.speed,.bottom,.sheet,.modal'))return;userHold();},{passive:true});
+
+/* ============ MODO PALCO ============ */
+var wakeLock=null,hideT=null,wasFs=false;
+function fsEl(){return document.fullscreenElement||document.webkitFullscreenElement||null;}
+async function lockScreen(){try{if('wakeLock' in navigator){wakeLock=await navigator.wakeLock.request('screen');}}catch(e){}}
+function unlockScreen(){try{if(wakeLock){wakeLock.release();}}catch(e){}wakeLock=null;}
+function showControls(){
+  var bar=$('#bottomBar'),sp=$('#speedBar');bar.classList.remove('hide');sp.classList.remove('hide');clearTimeout(hideT);
+  if(stage)hideT=setTimeout(function(){if(document.activeElement===$('#spIn'))return showControls();bar.classList.add('hide');sp.classList.add('hide');},3000);
+}
+function enterStage(){
+  closeSheet();stage=true;document.body.classList.add('stage');
+  var el=document.documentElement,req=el.requestFullscreen||el.webkitRequestFullscreen;
+  try{if(req){var p=req.call(el);if(p&&p.catch)p.catch(function(){});}}catch(e){}
+  lockScreen();showControls();
+  toast('Modo palco · toque na tela para ver os controles · segure ‹ › por 1 s para trocar de música',3000);
+}
+function exitStage(){
+  stage=false;document.body.classList.remove('stage');clearTimeout(hideT);
+  $('#bottomBar').classList.remove('hide');$('#speedBar').classList.remove('hide');
+  unlockScreen();
+  try{if(fsEl()){var ex=document.exitFullscreen||document.webkitExitFullscreen;if(ex){var p=ex.call(document);if(p&&p.catch)p.catch(function(){});}}}catch(e){}
+  wasFs=false;
+}
+function onFsChange(){if(fsEl()){wasFs=true;}else if(stage&&wasFs){exitStage();}}
+document.addEventListener('fullscreenchange',onFsChange);
+document.addEventListener('webkitfullscreenchange',onFsChange);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'&&stage)lockScreen();});
+$('#stageBtn').addEventListener('click',enterStage);
+$('#stageBtn2').addEventListener('click',enterStage);
+$('#exitStage').addEventListener('click',exitStage);
+$('#mainArea').addEventListener('click',function(){if(stage)showControls();});
+$('#bottomBar').addEventListener('pointerdown',function(){if(stage)showControls();});
+$('#speedBar').addEventListener('pointerdown',function(){if(stage)showControls();});
+
+/* ============ TROCA DE MÚSICA ============ */
+function load(i){
+  cancelCount();
+  R.state='idle';R.vt=0;R.useAudio=false;
+  cur=(i+SONGS.length)%SONGS.length;var s=SONGS[cur];
+  audio.pause();audio.src=s.audio;
+  $('#title').textContent=s.title;$('#mini').textContent=s.title;
+  $('#pos').textContent=(cur+1)+' / '+SONGS.length+' · '+s.artist;
+  $('#bpm').value=lsGet('v8bpm-'+s.id)||s.bpm;
+  $('#seek').value=0;$('#spIn').value=speed();
+  renderSheet();renderList();updPlay();updDurInfo();updTime();
+  window.scrollTo(0,0);
+  if(stage)showControls();
+}
+function bindNav(btn,dir){
+  var t=null;
+  btn.addEventListener('click',function(){if(!stage)load(cur+dir);});
+  btn.addEventListener('contextmenu',function(e){e.preventDefault();});
+  btn.addEventListener('pointerdown',function(){
+    if(!stage)return;
+    btn.classList.add('holding');
+    t=setTimeout(function(){btn.classList.remove('holding');load(cur+dir);toast(SONGS[cur].title+' · '+keyText(),1500);},900);
+  });
+  ['pointerup','pointerleave','pointercancel'].forEach(function(ev){btn.addEventListener(ev,function(){clearTimeout(t);btn.classList.remove('holding');});});
+}
+bindNav($('#prev'),-1);
+bindNav($('#next'),1);
+
+/* ============ BPM / METRÔNOMO ============ */
+var metroT=null,beat=0,taps=[];
+$('#countBeats').value=lsGet('v7count')||'4';
+$('#countBeats').addEventListener('change',function(){lsSet('v7count',this.value);});
+function saveBpm(v){$('#bpm').value=Math.max(30,Math.min(240,v));lsSet('v8bpm-'+sid(),$('#bpm').value);if(metroT){stopMetro();startMetro();}}
+$('#bpmUp').addEventListener('click',function(){saveBpm(bpmV()+1);});
+$('#bpmDown').addEventListener('click',function(){saveBpm(bpmV()-1);});
+$('#bpm').addEventListener('change',function(){saveBpm(bpmV());});
+$('#tap').addEventListener('click',function(){var n=performance.now();taps=taps.filter(function(t){return n-t<3000;});taps.push(n);if(taps.length>1)saveBpm(Math.round(60000/((taps[taps.length-1]-taps[0])/(taps.length-1))));});
+function showBeat(){$$('.beats i').forEach(function(x,i){x.classList.toggle('on',i===beat);});}
+function startMetro(){beat=0;tick(true);showBeat();metroT=setInterval(function(){beat=(beat+1)%4;tick(beat===0);showBeat();},60000/bpmV());$('#metro').textContent='■ Parar';}
+function stopMetro(){clearInterval(metroT);metroT=null;$('#metro').textContent='♩ Metrônomo';$$('.beats i').forEach(function(x){x.classList.remove('on');});}
+$('#metro').addEventListener('click',function(){if(metroT)stopMetro();else startMetro();});
+
+/* ============ TECLADO / PEDAL BLUETOOTH ============ */
+var lastKey=0;
+function modalOpen(){return !!document.querySelector('.modal.open');}
+document.addEventListener('keydown',function(e){
+  var tag=e.target&&e.target.tagName;
+  if(tag==='INPUT'||tag==='SELECT'||tag==='TEXTAREA')return;
+  if(modalOpen())return;
+  if(e.key==='Escape'&&stage&&!fsEl()){exitStage();return;}
+  var k=e.key;
+  if(e.code==='Space'||k==='PageDown'||k==='PageUp'||k==='ArrowRight'||k==='ArrowLeft'){
+    e.preventDefault();
+    var n=Date.now();if(n-lastKey<350)return;lastKey=n;
+    onPlay();
+  }
+});
+
+/* ============ POPUPS: COMO USAR + TELA INICIAL ============ */
+var deferredInstall=null;
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredInstall=e;});
+window.addEventListener('appinstalled',function(){lsSet('v10install','hide');closeModal('insModal');});
+function isInstalled(){try{return window.matchMedia('(display-mode: standalone)').matches||window.matchMedia('(display-mode: fullscreen)').matches||window.navigator.standalone===true;}catch(e){return false;}}
+function isIOS(){var u=navigator.userAgent||'';return /iPad|iPhone|iPod/.test(u)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);}
+function isAndroid(){return /Android/i.test(navigator.userAgent||'');}
+function openModal(id){$('#'+id).classList.add('open');}
+function closeModal(id){$('#'+id).classList.remove('open');}
+function howText(){
+  if(isIOS())return '<b>iPhone / iPad (Safari):</b><br>1. Toque em <b>Compartilhar</b> (quadrado com seta para cima).<br>2. Role e toque em <b>Adicionar à Tela de Início</b>.<br>3. Toque em <b>Adicionar</b>.<br><br>Se estiver em outro navegador, abra o link no <b>Safari</b> primeiro.';
+  if(isAndroid())return '<b>Android (Chrome):</b><br>1. Toque no menu <b>⋮</b> no canto de cima.<br>2. Toque em <b>Adicionar à tela inicial</b> ou <b>Instalar app</b>.<br>3. Confirme em <b>Adicionar</b>.';
+  return '<b>Computador (Chrome ou Edge):</b><br>Clique no ícone de instalar na barra de endereço, ou no menu <b>⋮</b> → <b>Instalar</b> (no Chrome: <b>Transmitir, salvar e compartilhar → Criar atalho</b>).';
+}
+function resetInstallModal(){$('#insHow').classList.remove('show');$('#insHow').innerHTML='';$('#insActs').style.display='grid';$('#insDoneActs').style.display='none';}
+function maybeShowInstall(force){
+  if(isInstalled()){if(force)toast('O app já está na tela inicial',2000);return;}
+  if(!force&&lsGet('v10install')==='hide')return;
+  resetInstallModal();openModal('insModal');
+}
+function showTutorial(){openModal('tutModal');}
+function afterTutorial(){closeModal('tutModal');setTimeout(function(){maybeShowInstall(false);},250);}
+$('#tutClose').addEventListener('click',afterTutorial);
+$('#tutNever').addEventListener('click',function(){lsSet('v10tutorial','hide');afterTutorial();});
+$('#insClose').addEventListener('click',function(){closeModal('insModal');});
+$('#insNever').addEventListener('click',function(){lsSet('v10install','hide');closeModal('insModal');});
+$('#insOk').addEventListener('click',function(){closeModal('insModal');});
+$('#insAdd').addEventListener('click',async function(){
+  lsSet('v10install','hide');
+  if(deferredInstall){
+    try{deferredInstall.prompt();await deferredInstall.userChoice;}catch(e){}
+    deferredInstall=null;closeModal('insModal');return;
+  }
+  $('#insHow').innerHTML=howText();$('#insHow').classList.add('show');
+  $('#insActs').style.display='none';$('#insDoneActs').style.display='grid';
+});
+$('#helpBtn').addEventListener('click',function(){closeSheet();showTutorial();});
+$('#installBtn').addEventListener('click',function(){closeSheet();maybeShowInstall(true);});
+
+updAudioBtn();
+load(0);
+if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){cache={};parsed={};renderSheet();});}
+setTimeout(function(){
+  if(lsGet('v10tutorial')!=='hide')showTutorial();
+  else maybeShowInstall(false);
+},400);
+})();
+</script>
+</body>
+</html>
